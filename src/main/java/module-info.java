@@ -1,5 +1,5 @@
 module fi.oulu.tol {
     requires org.json;
-    opens fi.oulu.tol to javafx.fxml;
+    requires java.sql;
     exports fi.oulu.tol;
 }
