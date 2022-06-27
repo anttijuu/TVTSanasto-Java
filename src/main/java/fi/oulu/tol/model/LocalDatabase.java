@@ -93,14 +93,24 @@ public class LocalDatabase {
     }
 
     public void saveCategories(List<TermCategory> categories) throws SQLException {
-		String insertMsgStatement = "insert into category values(?, ?, ?, ?, ?, ?)";
+		String insertMsgStatement = "insert into category (id, nameEn, nameFi, nameSe, termsUrl, updated)" +
+                                    " values(?, ?, ?, ?, ?, ?) on conflict (id) do update" +
+                                    " set nameEn = excluded.nameEn," +
+                                    " nameFi = excluded.nameFi," +
+                                    " nameSe = excluded.nameSe," +
+                                    " termsUrl = excluded.termsUrl";
 		PreparedStatement createStatement;
 		createStatement = connection.prepareStatement(insertMsgStatement);
-		createStatement.setString(1, user);
-		createStatement.setString(2, message.nick);
-		createStatement.setLong(3, message.dateAsLong());
-		createStatement.setString(4, message.message);
-		createStatement.executeUpdate();
+        for (TermCategory category : categories) {
+            createStatement.setString(1, category.id);
+            createStatement.setString(2, category.nameEn);
+            createStatement.setString(3, category.nameFi);
+            createStatement.setString(4, category.nameSe);
+            createStatement.setString(5, category.termsURL);
+            var timeStamp = category.updated.toInstant(ZoneOffset.UTC).toEpochMilli();
+            createStatement.setLong(6, timeStamp);
+            createStatement.executeUpdate();        
+        }
 		createStatement.close();
     }
     

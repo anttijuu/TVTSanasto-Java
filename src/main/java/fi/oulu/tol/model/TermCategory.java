@@ -1,7 +1,6 @@
 package fi.oulu.tol.model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 
@@ -38,5 +37,10 @@ public class TermCategory implements Comparable<TermCategory> {
             return ((TermCategory)o).id.equals(id);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

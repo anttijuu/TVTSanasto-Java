@@ -19,13 +19,23 @@ public class TermProvider {
         database.open("test.sqlite");
         List<TermCategory> categories = database.readCategories();
         if (categories.isEmpty()) {
-            categories = network.getIndex();
-            for (TermCategory category : categories) {
-                if (!terms.containsKey(category)) {
-                    terms.put(category, new ArrayList<>());
-                }
+            updateIndex();
+        } else {
+            updateMap(categories);
+        }
+    }
+
+    public void updateIndex() throws SQLException, IOException {
+        List<TermCategory> categories = network.getIndex();
+        database.saveCategories(categories);
+        updateMap(categories);
+    }
+
+    private void updateMap(List<TermCategory> fromCategories) {
+        for (TermCategory category : fromCategories) {
+            if (!terms.containsKey(category)) {
+                terms.put(category, new ArrayList<>());
             }
-            
         }
     }
 }
