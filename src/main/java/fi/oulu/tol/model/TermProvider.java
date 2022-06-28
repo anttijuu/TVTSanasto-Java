@@ -31,6 +31,10 @@ public class TermProvider {
         updateMap(categories);
     }
 
+    public List<TermCategory> getCategories() {
+        return terms.keySet().stream().toList();
+    }
+
     private void updateMap(List<TermCategory> fromCategories) {
         for (TermCategory category : fromCategories) {
             if (!terms.containsKey(category)) {

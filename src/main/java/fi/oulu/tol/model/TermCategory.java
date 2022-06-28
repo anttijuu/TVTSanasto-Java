@@ -7,6 +7,8 @@ import java.util.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fi.oulu.tol.Settings;
+
 public class TermCategory implements Comparable<TermCategory> {
     String id;
     String nameEn;
@@ -42,5 +44,16 @@ public class TermCategory implements Comparable<TermCategory> {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        switch (Settings.language) {
+            case FINNISH:
+                return nameFi;
+            case ENGLISH:
+                return nameEn;
+        }
+        return nameFi;
     }
 }
