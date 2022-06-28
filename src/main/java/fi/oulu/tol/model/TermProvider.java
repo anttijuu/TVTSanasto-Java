@@ -14,6 +14,7 @@ public class TermProvider {
     private Map<TermCategory, List<Term>> terms = new HashMap<>();
     private LocalDatabase database = new LocalDatabase();
     private Downloader network = new Downloader();
+    private TermCategory selectedCategory;
 
     public TermProvider() throws SQLException, IOException {
         database.open("test.sqlite");
@@ -41,5 +42,9 @@ public class TermProvider {
                 terms.put(category, new ArrayList<>());
             }
         }
+    }
+
+    public void setSelectedCategory(TermCategory source) {
+        selectedCategory = source;
     }
 }

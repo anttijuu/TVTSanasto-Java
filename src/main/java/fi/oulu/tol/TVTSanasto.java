@@ -36,7 +36,7 @@ public class TVTSanasto {
         frame.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
         frame.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
         
-        frame.add(new CategoryListView(new TermCategoryModel(provider.getCategories())));
+        frame.add(new CategoryListView(provider));
         frame.add(new TermListView(new TermCategoryModel(provider.getCategories())));
         frame.add(new TermDetailView(new Term()));
         frame.pack();
