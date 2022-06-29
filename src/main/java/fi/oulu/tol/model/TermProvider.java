@@ -10,41 +10,49 @@ import java.util.Map;
 import fi.oulu.tol.networking.Downloader;
 
 public class TermProvider {
-    
-    private Map<TermCategory, List<Term>> terms = new HashMap<>();
-    private LocalDatabase database = new LocalDatabase();
-    private Downloader network = new Downloader();
-    private TermCategory selectedCategory;
 
-    public TermProvider() throws SQLException, IOException {
-        database.open("test.sqlite");
-        List<TermCategory> categories = database.readCategories();
-        if (categories.isEmpty()) {
-            updateIndex();
-        } else {
-            updateMap(categories);
-        }
-    }
+	private Map<TermCategory, List<Term>> terms = new HashMap<>();
+	private LocalDatabase database = new LocalDatabase();
+	private Downloader network = new Downloader();
+	private TermCategory selectedCategory;
 
-    public void updateIndex() throws SQLException, IOException {
-        List<TermCategory> categories = network.getIndex();
-        database.saveCategories(categories);
-        updateMap(categories);
-    }
+	public TermProvider() throws SQLException, IOException {
+		database.open("test.sqlite");
+		List<TermCategory> categories = database.readCategories();
+		if (categories.isEmpty()) {
+			fetchIndex();
+		} else {
+			updateMap(categories);
+		}
+	}
 
-    public List<TermCategory> getCategories() {
-        return terms.keySet().stream().toList();
-    }
+	public void fetchIndex() throws SQLException, IOException {
+		List<TermCategory> categories = network.getIndex();
+		database.saveCategories(categories);
+		updateMap(categories);
+	}
 
-    private void updateMap(List<TermCategory> fromCategories) {
-        for (TermCategory category : fromCategories) {
-            if (!terms.containsKey(category)) {
-                terms.put(category, new ArrayList<>());
-            }
-        }
-    }
+	public List<TermCategory> getCategories() {
+		return terms.keySet().stream().toList();
+	}
 
-    public void setSelectedCategory(TermCategory source) {
-        selectedCategory = source;
-    }
+	public List<Term> getSelectedCategoryTerms() {
+		return terms.get(selectedCategory);
+	}
+
+	public List<Term> getTerms(TermCategory forCategory) {
+		return terms.get(forCategory);
+	}
+
+	private void updateMap(List<TermCategory> fromCategories) {
+		for (TermCategory category : fromCategories) {
+			if (!terms.containsKey(category)) {
+				terms.put(category, new ArrayList<>());
+			}
+		}
+	}
+
+	public void setSelectedCategory(TermCategory source) {
+		selectedCategory = source;
+	}
 }
