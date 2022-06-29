@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import fi.oulu.tol.model.Term;
 import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.CategoryListView;
-import fi.oulu.tol.view.TermCategoryModel;
+import fi.oulu.tol.view.TermCategoryListModel;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
 
@@ -37,7 +37,7 @@ public class TVTSanasto {
 		frame.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
 
 		frame.add(new CategoryListView(provider));
-		frame.add(new TermListView(new TermCategoryModel(provider.getCategories())));
+		frame.add(new TermListView(provider));
 		frame.add(new TermDetailView(new Term()));
 		frame.pack();
 		frame.setVisible(true);

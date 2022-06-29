@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import fi.oulu.tol.networking.Downloader;
 
@@ -15,6 +17,7 @@ public class TermProvider {
 	private LocalDatabase database = new LocalDatabase();
 	private Downloader network = new Downloader();
 	private TermCategory selectedCategory;
+	private Set<TermProviderObserver> observers = new HashSet<>();
 
 	public TermProvider() throws SQLException, IOException {
 		database.open("test.sqlite");
@@ -54,5 +57,13 @@ public class TermProvider {
 
 	public void setSelectedCategory(TermCategory source) {
 		selectedCategory = source;
+	}
+
+	void addObserver(TermProviderObserver observer) {
+		observers.add(observer);
+	}
+
+	void removeObserver(TermProviderObserver observer) {
+		observers.remove(observer);
 	}
 }

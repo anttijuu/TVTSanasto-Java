@@ -15,14 +15,14 @@ import fi.oulu.tol.model.TermProvider;
 public class CategoryListView extends JPanel implements ListSelectionListener {
 
 	private JScrollPane scrollPane;
-	private TermCategoryModel categories;
+	private TermCategoryListModel categories;
 	private JList<TermCategory> list;
 	private TermProvider provider;
 
 	public CategoryListView(TermProvider provider) {
 		this.provider = provider;
 		setPreferredSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
-		categories = new TermCategoryModel(provider.getCategories());
+		categories = new TermCategoryListModel(provider.getCategories());
 		list = new JList<>(categories);
 		scrollPane = new JScrollPane(list);
 		list.addListSelectionListener(this);
@@ -35,6 +35,6 @@ public class CategoryListView extends JPanel implements ListSelectionListener {
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		provider.setSelectedCategory(list.getSelectedValue());
-
 	}
+
 }
