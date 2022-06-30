@@ -3,6 +3,8 @@ package fi.oulu.tol.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fi.oulu.tol.Settings;
+
 public class Term {
 	String id;
 	String english;
@@ -20,5 +22,13 @@ public class Term {
 		term.finnishLink = jsonObject.getString("finnishLink");
 		term.definition = jsonObject.getString("definition");
 		return term;
+	}
+
+	@Override
+	public String toString() {
+		if (Settings.language == Language.FINNISH) {
+			return finnish + " (" + english + ")";
+		}
+		return english + " (" + finnish + ")";
 	}
 }

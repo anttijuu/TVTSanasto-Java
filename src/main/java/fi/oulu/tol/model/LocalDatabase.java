@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class LocalDatabase {
@@ -109,6 +110,59 @@ public class LocalDatabase {
 			createStatement.executeUpdate();
 		}
 		createStatement.close();
+	}
+
+	public List<Term> readTerms(String forCategoryId) throws SQLException {
+		List<Term> terms = new ArrayList<>();
+		String query = "select * from term where category = ?";
+		Term term = null;
+		PreparedStatement queryStatement = connection.prepareStatement(query);
+		queryStatement.setString(1, forCategoryId);
+		ResultSet rs = queryStatement.executeQuery();
+		if (rs.next()) {
+			String id = rs.getString("id");
+			String english = rs.getString("english");
+			String finnish = rs.getString("finnish");
+			String englishLink = rs.getString("englishLink");
+			String finnishLink = rs.getString("finnishLink");
+			String definition = rs.getString("definition");
+			term = new Term();
+			term.id = id;
+			term.english = english;
+			term.finnish = finnish;
+			term.englishLink = englishLink;
+			term.finnishLink = finnishLink;
+			term.definition = definition;
+			terms.add(term);
+		}
+		queryStatement.close();
+		return terms;
+	}
+
+	public void saveTerms(List<Term> terms, String inCategoryId) throws SQLException {
+		String insertTermStatement = "insert into term (id, english, finnish, englishLink, finnishLink, definition, category)"
+				+ " values(?, ?, ?, ?, ?, ?, ?) on conflict (id, category) do update set english = excluded.english,"
+				+ " finnish = excluded.finnish, englishLink = excluded.englishLink, finnishLink = excluded.finnishLink, definition = excluded.definition";
+		PreparedStatement createStatement;
+		createStatement = connection.prepareStatement(insertTermStatement);
+		for (Term term : terms) {
+			createStatement.setString(1, term.id);
+			createStatement.setString(2, term.english);
+			createStatement.setString(3, term.finnish);
+			createStatement.setString(4, term.englishLink);
+			createStatement.setString(5, term.finnishLink);
+			createStatement.setString(6, term.definition);
+			createStatement.setString(7, inCategoryId);
+			createStatement.executeUpdate();
+		}
+		createStatement.close();
+		String updateStatement = "update category set updated = ? where id = ?";
+		PreparedStatement update = connection.prepareStatement(updateStatement);
+		Date now = new Date();
+		update.setLong(1, now.toInstant().atOffset(ZoneOffset.UTC).toEpochSecond());
+		update.setString(2, inCategoryId);
+		update.executeUpdate();
+		update.close();
 	}
 
 	private boolean initializeDatabase() throws SQLException {

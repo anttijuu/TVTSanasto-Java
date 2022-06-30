@@ -24,7 +24,8 @@ public class TermCategory implements Comparable<TermCategory> {
 		termCategory.nameFi = jsonObject.getString("nameFi");
 		termCategory.nameSe = jsonObject.getString("nameSe");
 		termCategory.termsURL = jsonObject.getString("termsURL");
-		termCategory.updated = new Date().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();
+		Date weekAgo = new Date(System.currentTimeMillis() - 3600 * 24 * 7);
+		termCategory.updated = weekAgo.toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();
 		return termCategory;
 	}
 

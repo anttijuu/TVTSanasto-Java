@@ -1,6 +1,7 @@
 package fi.oulu.tol.view;
 
 import java.awt.Dimension;
+import java.awt.BorderLayout;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -12,24 +13,25 @@ import fi.oulu.tol.Settings;
 import fi.oulu.tol.model.TermCategory;
 import fi.oulu.tol.model.TermProvider;
 
-public class CategoryListView extends JPanel implements ListSelectionListener {
+public class TermCategoryListView extends JPanel implements ListSelectionListener {
 
 	private JScrollPane scrollPane;
 	private TermCategoryListModel categories;
 	private JList<TermCategory> list;
 	private TermProvider provider;
 
-	public CategoryListView(TermProvider provider) {
+	public TermCategoryListView(TermProvider provider) {
+		super(new BorderLayout());
 		this.provider = provider;
 		setPreferredSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
-		categories = new TermCategoryListModel(provider.getCategories());
+		categories = new TermCategoryListModel(provider);
 		list = new JList<>(categories);
 		scrollPane = new JScrollPane(list);
 		list.addListSelectionListener(this);
 		if (categories.getSize() > 0) {
 			list.setSelectedIndex(0);
 		}
-		add(scrollPane);
+		add(scrollPane, BorderLayout.CENTER);
 	}
 
 	@Override
