@@ -88,14 +88,18 @@ public class TermProvider {
 		}
 	}
 
-	public void setSelectedCategory(TermCategory source) {
-		selectedCategory = source;
-		notifyObservers(Topic.SELECTED_CATEGORY_CHANGED);
+	public void setSelectedCategory(TermCategory category) {
+		if (selectedCategory != category) {
+			selectedCategory = category;
+			notifyObservers(Topic.SELECTED_CATEGORY_CHANGED);	
+		}
 	}
 
 	public void setSelectedTerm(Term term) {
-		selectedTerm = term;
-		notifyObservers(Topic.SELECTED_TERM_CHANGED);
+		if (selectedTerm != term) {
+			selectedTerm = term;
+			notifyObservers(Topic.SELECTED_TERM_CHANGED);	
+		}
 	}
 
 	public void addObserver(TermProviderObserver observer) {
