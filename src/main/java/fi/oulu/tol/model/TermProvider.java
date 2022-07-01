@@ -19,7 +19,7 @@ import fi.oulu.tol.networking.Downloader;
 
 public class TermProvider {
 
-	private Map<TermCategory, List<Term>> terms = new HashMap<>();
+	private Map<TermCategory, List<Term>> categoriesAndTerms = new HashMap<>();
 	private LocalDatabase database = new LocalDatabase();
 	private Downloader network = new Downloader();
 	private TermCategory selectedCategory;
@@ -50,29 +50,40 @@ public class TermProvider {
 	}
 
 	public List<TermCategory> getCategories() {
-		return terms.keySet().stream().toList();
+		return categoriesAndTerms.keySet().stream().toList();
 	}
 
-	public List<Term> getSelectedCategoryTerms() {
-		return terms.get(selectedCategory);
+	public List<Term> getSelectedCategoryTerms() throws SQLException, JSONException, IOException {
+		List<Term> terms = categoriesAndTerms.get(selectedCategory);
+		if (terms.isEmpty()) {
+			terms = database.readTerms(selectedCategory.id);
+			if (terms.isEmpty()) {
+				return fetchTerms(selectedCategory);
+			}
+		}
+		return terms;
+	}
+
+	private List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
+		logger.info("Fetching terms from remote.");
+		List<Term> fetchedTerms = network.getTerms(category.termsURL);
+		categoriesAndTerms.put(category, fetchedTerms);
+		logger.info("Saving fetched terms to the local db.");
+		database.saveTerms(fetchedTerms, category.id);
+		return fetchedTerms;
 	}
 
 	public List<Term> getTerms(TermCategory forCategory) {
-		return terms.get(forCategory);
+		return categoriesAndTerms.get(forCategory);
 	}
 
 	private void updateMap(List<TermCategory> fromCategories) throws JSONException, IOException, SQLException {
 		for (TermCategory category : fromCategories) {
-			if (!terms.containsKey(category)) {
-				logger.info("Adding a new category to hashmap.");
-				terms.put(category, new ArrayList<>());
-				if (terms.get(category).isEmpty()) {
-					logger.info("Known and empty category, fetching terms from remote.");
-					List<Term> fetchedTerms = network.getTerms(category.termsURL);
-					terms.put(category, fetchedTerms);
-					logger.info("Saving fetched terms to the local db.");
-					database.saveTerms(fetchedTerms, category.id);
-				}
+			if (!categoriesAndTerms.containsKey(category)) {
+				logger.info("Adding a new category to map.");
+				categoriesAndTerms.put(category, new ArrayList<>());
+			} else {
+				// Category already in map.
 			}
 		}
 	}

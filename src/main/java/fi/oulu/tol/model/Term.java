@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import fi.oulu.tol.Settings;
 
 public class Term {
+
 	String id;
 	String english;
 	String finnish;
@@ -23,6 +24,49 @@ public class Term {
 		term.definition = jsonObject.getString("definition");
 		return term;
 	}
+
+		/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @return the english
+	 */
+	public String getEnglish() {
+		return english;
+	}
+
+	/**
+	 * @return the finnish
+	 */
+	public String getFinnish() {
+		return finnish;
+	}
+
+	/**
+	 * @return the englishLink
+	 */
+	public String getEnglishLink() {
+		return englishLink;
+	}
+
+	/**
+	 * @return the finnishLink
+	 */
+	public String getFinnishLink() {
+		return finnishLink;
+	}
+
+	/**
+	 * @return the definition
+	 */
+	public String getDefinition() {
+		return definition;
+	}
+
 
 	@Override
 	public String toString() {

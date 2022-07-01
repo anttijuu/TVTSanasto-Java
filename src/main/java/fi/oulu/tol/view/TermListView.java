@@ -27,6 +27,7 @@ public class TermListView extends JPanel implements ListSelectionListener {
 		terms = new TermListModel(provider);
 		setPreferredSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
 		list = new JList<>();
+		list.setCellRenderer(new TermRowRenderer());
 		list.setModel(terms);
 		list.addListSelectionListener(this);
 		scrollPane = new JScrollPane(list);

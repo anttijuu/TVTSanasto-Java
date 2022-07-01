@@ -3,7 +3,7 @@ package fi.oulu.tol;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
-
+import java.awt.FontFormatException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -25,10 +25,13 @@ public class TVTSanasto {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (FontFormatException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void run() throws SQLException, IOException {
+	private void run() throws SQLException, IOException, FontFormatException {
+		Settings.installEmojiFont();
 		provider = new TermProvider();
 		frame = new JFrame("TVT Sanasto");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
