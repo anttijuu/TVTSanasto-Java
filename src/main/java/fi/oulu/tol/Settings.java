@@ -22,8 +22,9 @@ public class Settings {
 
 	public static void installEmojiFont() throws IOException, FontFormatException {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		Font font = Font.createFont(Font.TRUETYPE_FONT, new File("NotoEmoji-VariableFont_wght.ttf"));
-		emojiFont = font.deriveFont(16.0f);
-		ge.registerFont(emojiFont);
+		emojiFont = new Font("Apple Color Emoji", Font.PLAIN, 18);
+		// Font font = Font.createFont(Font.TRUETYPE_FONT, new File("NotoEmoji-VariableFont_wght.ttf"));
+		// emojiFont = font.deriveFont(16.0f);
+		// ge.registerFont(emojiFont);
 	}
 }

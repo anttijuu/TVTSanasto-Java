@@ -58,8 +58,9 @@ public class TermProvider {
 		if (terms.isEmpty()) {
 			terms = database.readTerms(selectedCategory.id);
 			if (terms.isEmpty()) {
-				return fetchTerms(selectedCategory);
+				terms = fetchTerms(selectedCategory);
 			}
+			categoriesAndTerms.put(selectedCategory, terms);
 		}
 		return terms;
 	}

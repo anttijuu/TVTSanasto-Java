@@ -119,7 +119,7 @@ public class LocalDatabase {
 		PreparedStatement queryStatement = connection.prepareStatement(query);
 		queryStatement.setString(1, forCategoryId);
 		ResultSet rs = queryStatement.executeQuery();
-		if (rs.next()) {
+		while (rs.next()) {
 			String id = rs.getString("id");
 			String english = rs.getString("english");
 			String finnish = rs.getString("finnish");

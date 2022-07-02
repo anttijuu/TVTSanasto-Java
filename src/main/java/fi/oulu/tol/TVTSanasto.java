@@ -2,6 +2,8 @@ package fi.oulu.tol;
 
 import java.awt.Dimension;
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import java.awt.FlowLayout;
 import java.awt.FontFormatException;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class TVTSanasto {
 		Settings.installEmojiFont();
 		provider = new TermProvider();
 		frame = new JFrame("TVT Sanasto");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
 		frame.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
 
