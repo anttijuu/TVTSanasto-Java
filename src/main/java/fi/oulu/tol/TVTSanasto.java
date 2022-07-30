@@ -9,6 +9,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +32,7 @@ public class TVTSanasto implements ActionListener {
 	private JFrame frame;
 	private TermProvider provider;
 	private static final Logger logger = LogManager.getLogger(TVTSanasto.class);
-	
+
 	public static void main(String[] args) {
 		logger.info("Launching TVTSanasto");
 		try {
@@ -58,14 +59,27 @@ public class TVTSanasto implements ActionListener {
 		frame.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
 
 		JSplitPane rootPanel = new JSplitPane();
+		rootPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		JTextField searchField = new JTextField();
+		searchField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				provider.setSearchFilter(searchField.getText().trim().toLowerCase());
+			}
+		});
+		searchField.setToolTipText("Etsi termejä");
+		rootPanel.setTopComponent(searchField);
+
+		JSplitPane categoryPanel = new JSplitPane();
 		frame.getContentPane().add(rootPanel);
-		rootPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		rootPanel.setTopComponent(new TermCategoryListView(provider));
+		categoryPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		categoryPanel.setTopComponent(new TermCategoryListView(provider));
 		JSplitPane detailPanel = new JSplitPane();
 		detailPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		detailPanel.setTopComponent(new TermListView(provider));
 		detailPanel.setBottomComponent(new TermDetailView(provider));
-		rootPanel.setBottomComponent(detailPanel);
+		categoryPanel.setBottomComponent(detailPanel);
+		rootPanel.setBottomComponent(categoryPanel);
 
 		logger.debug("Initializing Menus");
 		JMenuBar mainMenu = new JMenuBar();
@@ -103,7 +117,7 @@ public class TVTSanasto implements ActionListener {
 		commandMenu = new JMenuItem("Asetukset");
 		commandMenu.setActionCommand("cmd-settings");
 		commandMenu.addActionListener(this);
-		mazeMenu.add(commandMenu);		
+		mazeMenu.add(commandMenu);
 		mainMenu.add(mazeMenu);
 		frame.setJMenuBar(mainMenu);
 		logger.debug("Showing app");
@@ -136,6 +150,6 @@ public class TVTSanasto implements ActionListener {
 		} else {
 			logger.error("Unknown menu command selected");
 		}
-		
+
 	}
 }

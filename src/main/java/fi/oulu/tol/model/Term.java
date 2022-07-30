@@ -71,6 +71,9 @@ public class Term {
 		return finnishLink.length() + englishLink.length() > 0;
 	}
 
+	public String description() {
+		return (finnish + " " + english + " " + definition).toLowerCase();
+	}
 
 	@Override
 	public String toString() {
