@@ -34,7 +34,7 @@ public class TermProvider {
 	
 	public TermProvider() throws SQLException, IOException {
 		logger.info("Initializing TermProvider.");
-		database.open("test.sqlite");
+		database.open("tvtsanasto.sqlite");
 		logger.info("Reading categories from local database.");
 		List<TermCategory> categories = database.readCategories();
 		if (categories.isEmpty()) {
