@@ -65,7 +65,7 @@ public class TermProvider {
 		return terms;
 	}
 
-	private List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
+	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
 		logger.info("Fetching terms from remote.");
 		List<Term> fetchedTerms = network.getTerms(category.termsURL);
 		categoriesAndTerms.put(category, fetchedTerms);
@@ -76,6 +76,10 @@ public class TermProvider {
 
 	public List<Term> getTerms(TermCategory forCategory) {
 		return categoriesAndTerms.get(forCategory);
+	}
+
+	public Term getSelectedTerm() {
+		return selectedTerm;
 	}
 
 	private void updateMap(List<TermCategory> fromCategories) throws JSONException, IOException, SQLException {
@@ -94,6 +98,10 @@ public class TermProvider {
 			selectedCategory = category;
 			notifyObservers(Topic.SELECTED_CATEGORY_CHANGED);	
 		}
+	}
+
+	public TermCategory getSelectedCategory() {
+		return selectedCategory;
 	}
 
 	public void setSelectedTerm(Term term) {

@@ -32,6 +32,7 @@ public class TermListView extends JPanel implements ListSelectionListener, ListD
 		this.provider = provider;
 		terms = new TermListModel(provider);
 		terms.addListDataListener(this);
+		setMinimumSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
 		setPreferredSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
 		list = new JList<>();
 		list.setCellRenderer(new TermRowRenderer());
@@ -43,7 +44,7 @@ public class TermListView extends JPanel implements ListSelectionListener, ListD
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		
+		provider.setSelectedTerm(list.getSelectedValue());
 	}
 
 	@Override

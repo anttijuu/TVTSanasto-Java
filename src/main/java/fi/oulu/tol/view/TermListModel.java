@@ -44,14 +44,12 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 
 	@Override
 	public void addListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
 		listener = l;
 	}
 
 	@Override
 	public void removeListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
-		
+		listener = null;		
 	}
 
 	@Override
@@ -59,9 +57,10 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 		if (topic == Topic.SELECTED_CATEGORY_CHANGED) {
 			try {
 				this.terms = provider.getSelectedCategoryTerms();
-				listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 1));
+				if (null != listener) {
+					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 1));
+				}
 			} catch (JSONException | SQLException | IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

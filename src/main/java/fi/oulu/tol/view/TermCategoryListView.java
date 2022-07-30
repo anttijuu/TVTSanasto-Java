@@ -16,16 +16,18 @@ import fi.oulu.tol.model.TermProvider;
 public class TermCategoryListView extends JPanel implements ListSelectionListener {
 
 	private JScrollPane scrollPane;
-	private TermCategoryListModel categories;
+	private transient TermCategoryListModel categories;
 	private JList<TermCategory> list;
-	private TermProvider provider;
+	private transient TermProvider provider;
 
 	public TermCategoryListView(TermProvider provider) {
 		super(new BorderLayout());
 		this.provider = provider;
+		setMinimumSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
 		setPreferredSize(new Dimension(Settings.LIST_WIDTH, Settings.WINDOW_HEIGHT));
 		categories = new TermCategoryListModel(provider);
 		list = new JList<>(categories);
+		list.setCellRenderer(new CategoryRowRenderer());
 		scrollPane = new JScrollPane(list);
 		list.addListSelectionListener(this);
 		if (categories.getSize() > 0) {
