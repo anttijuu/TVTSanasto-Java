@@ -1,10 +1,13 @@
 package fi.oulu.tol;
 
 import java.awt.Dimension;
+
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
@@ -46,7 +49,7 @@ public class TVTSanasto implements ActionListener {
 
 	private void run() throws SQLException, IOException, FontFormatException {
 		Settings.installEmojiFont();
-		logger.debug("Initializing TermProvider");
+		logger.debug("Creating TermProvider");
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
 		frame = new JFrame("TVT Sanasto");
@@ -72,6 +75,21 @@ public class TVTSanasto implements ActionListener {
 		commandMenu.addActionListener(this);
 		mazeMenu.add(commandMenu);
 		mazeMenu.addSeparator();
+
+		ButtonGroup group = new ButtonGroup();
+		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", false);
+		radioMenu.setActionCommand("sort-fi");
+		radioMenu.addActionListener(this);
+		group.add(radioMenu);
+		mazeMenu.add(radioMenu);
+		radioMenu = new JRadioButtonMenuItem("Englanti", false);
+		radioMenu.addActionListener(this);
+		radioMenu.setActionCommand("sort-en");
+		group.add(radioMenu);
+		mazeMenu.add(radioMenu);
+
+		mazeMenu.addSeparator();
+
 		commandMenu = new JMenuItem("Päivitä kategoriat");
 		commandMenu.setActionCommand("cmd-refresh-index");
 		commandMenu.addActionListener(this);

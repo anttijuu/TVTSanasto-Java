@@ -1,15 +1,21 @@
 package fi.oulu.tol.view;
 
 import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.awt.Desktop;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JSeparator;
 
 import com.github.rjeschke.txtmark.Processor;
 
@@ -21,15 +27,18 @@ import fi.oulu.tol.model.TermProviderObserver;
 
 public class TermDetailView extends JPanel implements TermProviderObserver {
 
-	private TermProvider provider;
-	private Term term;
-	private TermCategory category;
+	private transient TermProvider provider;
+	private transient Term term;
+	private transient TermCategory category;
 	private JLabel labelCategory;
 	private JLabel labelFinnish;
 	private JLabel labelEnglish;
 	private JEditorPane labelDefinition;
-	private JLabel labelURLFinnish;
-	private JLabel labelURLEnglish;
+	private JLabel labelLinks;
+	private JButton labelURLFinnish;
+	private JButton labelURLEnglish;
+
+	private URLActionListener urlActionListener = new URLActionListener();
 
 	public TermDetailView(TermProvider provider) {
 		this.provider = provider;
@@ -43,25 +52,59 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		labelCategory = new JLabel("Valitse termi listalta");
 		labelCategory.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelCategory);
+		add(Box.createRigidArea(new Dimension(0, 10)));
+		JSeparator separator = new JSeparator();
+		add(separator);
 		labelEnglish = new JLabel();
 		labelEnglish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelEnglish);
 		labelFinnish = new JLabel();
 		labelFinnish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelFinnish);
+		add(Box.createRigidArea(new Dimension(0, 10)));
 		labelDefinition = new JEditorPane();
 		labelDefinition.setContentType("text/html");
 		labelDefinition.setEditable(false);
 		labelDefinition.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelDefinition);
-		labelURLEnglish = new JLabel();
+		labelLinks = new JLabel("Lähteet");
+		add(labelLinks);
+		add(new JSeparator());
+		labelURLEnglish = new JButton();
 		labelURLEnglish.setAlignmentX(LEFT_ALIGNMENT);
+		labelURLEnglish.addActionListener(urlActionListener);
 		add(labelURLEnglish);
-		labelURLFinnish = new JLabel();
-		labelURLEnglish.setAlignmentX(LEFT_ALIGNMENT);
+		labelURLFinnish = new JButton();
+		labelURLFinnish.setAlignmentX(LEFT_ALIGNMENT);
+		labelURLFinnish.addActionListener(urlActionListener);
 		add(labelURLFinnish);
 		if (term != null) {
 			updateContents();
+		}
+	}
+
+	private class URLActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JButton button = (JButton) e.getSource();
+			String URL = button.getText();
+			if (URL.startsWith("http")) {
+				open(URL);
+			}
+		}
+	}
+
+	private static void open(String uri) {
+		if (Desktop.isDesktopSupported()) {
+			try {
+				Desktop.getDesktop().browse(new URI(uri));
+			} catch (IOException e) {
+
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		} else {
+
 		}
 	}
 
@@ -92,7 +135,24 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		labelFinnish.setText(term.getFinnish());
 		String result = Processor.process(term.getDefinition());
 		labelDefinition.setText(result);
-		labelURLEnglish.setText(term.getEnglishLink());
-		labelURLFinnish.setText(term.getFinnishLink());
+		String link = term.getEnglishLink();
+		int linkCount = 0;
+		if (link.startsWith("http")) {
+			labelURLEnglish.setText(link);
+			labelURLEnglish.setVisible(true);
+			linkCount++;
+		} else {
+			labelURLEnglish.setVisible(false);
+		}
+		link = term.getFinnishLink();
+		if (link.startsWith("http")) {
+			labelURLFinnish.setText(link);
+			labelURLFinnish.setVisible(true);
+			linkCount++;
+		} else {
+			labelURLFinnish.setVisible(false);
+		}
+		labelLinks.setVisible(linkCount > 0);
 	}
+
 }

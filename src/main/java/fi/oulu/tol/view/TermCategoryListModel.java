@@ -1,8 +1,10 @@
 package fi.oulu.tol.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import fi.oulu.tol.model.TermCategory;
@@ -13,7 +15,8 @@ public class TermCategoryListModel implements ListModel<TermCategory>, TermProvi
 
 	private List<TermCategory> categories;
 	private TermProvider provider;
-	
+	private ArrayList<ListDataListener> listeners = new ArrayList<>();
+
 	public TermCategoryListModel(TermProvider provider) {
 		this.provider = provider;
 		provider.addObserver(this);
@@ -32,20 +35,21 @@ public class TermCategoryListModel implements ListModel<TermCategory>, TermProvi
 
 	@Override
 	public void addListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
-
+		listeners.add(l);
 	}
 
 	@Override
 	public void removeListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
-
+		listeners.remove(l);
 	}
 
 	@Override
 	public void changeEvent(Topic topic) {
 		if (topic == Topic.CATEGORY_INDEX_CHANGED) {
 			categories = provider.getCategories();
+			for (ListDataListener listener : listeners) {
+				listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, categories.size() - 1));
+			}
 		}
 	}
 

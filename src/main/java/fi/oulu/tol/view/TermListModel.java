@@ -2,6 +2,7 @@ package fi.oulu.tol.view;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ListModel;
@@ -18,7 +19,7 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 
 	private TermProvider provider;
 	private List<Term> terms;
-	private ListDataListener listener;
+	private ArrayList<ListDataListener> listeners = new ArrayList<>();
 
 	public TermListModel(TermProvider provider) throws JSONException, SQLException, IOException {
 		this.provider = provider;
@@ -44,12 +45,12 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 
 	@Override
 	public void addListDataListener(ListDataListener l) {
-		listener = l;
+		listeners.add(l);
 	}
 
 	@Override
 	public void removeListDataListener(ListDataListener l) {
-		listener = null;		
+		listeners.remove(l);		
 	}
 
 	@Override
@@ -57,8 +58,8 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 		if (topic == Topic.SELECTED_CATEGORY_CHANGED) {
 			try {
 				this.terms = provider.getSelectedCategoryTerms();
-				if (null != listener) {
-					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 1));
+				for (ListDataListener listener : listeners) {
+					listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, terms.size() - 1));
 				}
 			} catch (JSONException | SQLException | IOException e) {
 				e.printStackTrace();

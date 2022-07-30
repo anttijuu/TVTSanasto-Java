@@ -67,6 +67,10 @@ public class Term {
 		return definition;
 	}
 
+	public boolean hasLinks() {
+		return finnishLink.length() + englishLink.length() > 0;
+	}
+
 
 	@Override
 	public String toString() {
