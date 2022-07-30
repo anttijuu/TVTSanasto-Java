@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import fi.oulu.tol.model.Language;
 import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
@@ -77,12 +78,12 @@ public class TVTSanasto implements ActionListener {
 		mazeMenu.addSeparator();
 
 		ButtonGroup group = new ButtonGroup();
-		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", false);
+		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", provider.getSortOrder() == Language.FINNISH);
 		radioMenu.setActionCommand("sort-fi");
 		radioMenu.addActionListener(this);
 		group.add(radioMenu);
 		mazeMenu.add(radioMenu);
-		radioMenu = new JRadioButtonMenuItem("Englanti", false);
+		radioMenu = new JRadioButtonMenuItem("Englanti", provider.getSortOrder() == Language.ENGLISH);
 		radioMenu.addActionListener(this);
 		radioMenu.setActionCommand("sort-en");
 		group.add(radioMenu);
@@ -114,6 +115,10 @@ public class TVTSanasto implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
 
+		} else if (e.getActionCommand().equals("sort-fi")) {
+			provider.setSortOrder(Language.FINNISH);
+		} else if (e.getActionCommand().equals("sort-en")) {
+			provider.setSortOrder(Language.ENGLISH);
 		} else if (e.getActionCommand().equals("cmd-refresh-index")) {
 			try {
 				provider.fetchIndex();

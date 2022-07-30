@@ -64,6 +64,15 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 			} catch (JSONException | SQLException | IOException e) {
 				e.printStackTrace();
 			}
+		} else if (topic == Topic.CATEGORY_CHANGED) {
+			try {
+				this.terms = provider.getSelectedCategoryTerms();
+				for (ListDataListener listener : listeners) {
+					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, terms.size() - 1));
+				}
+			} catch (JSONException | SQLException | IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

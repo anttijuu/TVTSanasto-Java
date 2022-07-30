@@ -3,6 +3,7 @@ package fi.oulu.tol.model;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ public class TermProvider {
 	private TermCategory selectedCategory;
 	private Term selectedTerm;
 	private Set<TermProviderObserver> observers = new HashSet<>();
+	private Language sortOrder = Language.FINNISH;
 
 	private static final Logger logger = LogManager.getLogger(TermProvider.class);
 	
@@ -60,14 +62,24 @@ public class TermProvider {
 			if (terms.isEmpty()) {
 				terms = fetchTerms(selectedCategory);
 			}
+			sort(terms);
 			categoriesAndTerms.put(selectedCategory, terms);
 		}
 		return terms;
 	}
 
+	private void sort(List<Term> terms) {
+		if (sortOrder == Language.FINNISH) {
+			Collections.sort(terms, (p1, p2) -> { return p1.finnish.toLowerCase().compareTo(p2.finnish.toLowerCase()); });
+		} else if (sortOrder == Language.ENGLISH) {
+			Collections.sort(terms, (p1, p2) -> { return p1.english.toLowerCase().compareTo(p2.english.toLowerCase()); });
+		}
+	}
+
 	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
 		logger.info("Fetching terms from remote.");
 		List<Term> fetchedTerms = network.getTerms(category.termsURL);
+		sort(fetchedTerms);
 		categoriesAndTerms.put(category, fetchedTerms);
 		logger.info("Saving fetched terms to the local db.");
 		database.saveTerms(fetchedTerms, category.id);
@@ -108,6 +120,23 @@ public class TermProvider {
 		if (selectedTerm != term) {
 			selectedTerm = term;
 			notifyObservers(Topic.SELECTED_TERM_CHANGED);	
+		}
+	}
+
+	public Language getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(Language order) {
+		if (order != sortOrder) {
+			sortOrder = order;
+			for (Map.Entry<TermCategory, List<Term>> entry : categoriesAndTerms.entrySet()) {
+				TermCategory category = entry.getKey();
+				List<Term> terms = entry.getValue();
+				sort(terms);
+				categoriesAndTerms.put(category, terms);
+		  	}
+			notifyObservers(Topic.CATEGORY_CHANGED);
 		}
 	}
 
