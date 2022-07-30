@@ -20,6 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.TimeZone;
 
 import fi.oulu.tol.model.Language;
 import fi.oulu.tol.model.TermProvider;
@@ -54,7 +57,10 @@ public class TVTSanasto implements ActionListener {
 	}
 
 	private void run() throws SQLException, IOException, FontFormatException {
-		Settings.installEmojiFont();
+		logger.debug("Reading settings");
+		Settings.readSettings();
+		logger.info("Index last fetched: " + Settings.lastIndexFetchDateTime.toString());
+		logger.info("Selected language/sortorder: " + Settings.language);
 		logger.debug("Creating TermProvider");
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
@@ -135,11 +141,17 @@ public class TVTSanasto implements ActionListener {
 			// TODO: Implement
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);
+			Settings.language = Language.FINNISH;
+			Settings.saveSettings();
 		} else if (e.getActionCommand().equals("sort-en")) {
 			provider.setSortOrder(Language.ENGLISH);
+			Settings.language = Language.ENGLISH;
+			Settings.saveSettings();
 		} else if (e.getActionCommand().equals("cmd-refresh-index")) {
 			try {
 				provider.fetchIndex();
+				Settings.lastIndexFetchDateTime = LocalDateTime.now(ZoneOffset.UTC);
+				Settings.saveSettings();
 			} catch (SQLException | IOException e1) {
 				e1.printStackTrace();
 			}
@@ -154,6 +166,6 @@ public class TVTSanasto implements ActionListener {
 		} else {
 			logger.error("Unknown menu command selected");
 		}
-
 	}
+
 }

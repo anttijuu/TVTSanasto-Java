@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.json.JSONException;
 
+import fi.oulu.tol.Settings;
 import fi.oulu.tol.model.TermProviderObserver.Topic;
 import fi.oulu.tol.networking.Downloader;
 
@@ -26,7 +27,7 @@ public class TermProvider {
 	private TermCategory selectedCategory;
 	private Term selectedTerm;
 	private Set<TermProviderObserver> observers = new HashSet<>();
-	private Language sortOrder = Language.FINNISH;
+	private Language sortOrder = Settings.language;
 	private String searchFilter = "";
 
 	private static final Logger logger = LogManager.getLogger(TermProvider.class);

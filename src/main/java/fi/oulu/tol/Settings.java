@@ -5,7 +5,14 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Properties;
 
 import fi.oulu.tol.model.Language;
 
@@ -17,14 +24,45 @@ public class Settings {
 	public static int WINDOW_HEIGHT = 800;
 	public static int LIST_WIDTH = 250;
 	public static Language language = Language.FINNISH;
+	public static LocalDateTime lastIndexFetchDateTime = null;
 
-	public static Font emojiFont;
+	private static final String configFileName = "settings.properties";
 
-	public static void installEmojiFont() throws IOException, FontFormatException {
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		emojiFont = new Font("Apple Color Emoji", Font.PLAIN, 18);
-		// Font font = Font.createFont(Font.TRUETYPE_FONT, new File("NotoEmoji-VariableFont_wght.ttf"));
-		// emojiFont = font.deriveFont(16.0f);
-		// ge.registerFont(emojiFont);
+	public static void readSettings() {
+		File configFile = new File(configFileName);
+		Properties config = new Properties();
+		try(FileInputStream istream = new FileInputStream(configFile)) {
+			config.load(istream);
+			long indexUpdatedTimeStamp = Long.parseLong(config.getProperty("indexupdated", "557442000000"));
+			lastIndexFetchDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(indexUpdatedTimeStamp), ZoneOffset.UTC);
+			String lang = config.getProperty("sortorder", "fi");
+			if (lang.equalsIgnoreCase("fi")) {
+				language = Language.FINNISH;
+			} else if (lang.equalsIgnoreCase("en")) {
+				language = Language.ENGLISH;
+			}
+		} catch (IOException e) {
+			language = language.FINNISH;
+			lastIndexFetchDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(557442000000L), ZoneOffset.UTC);
+		}
+	}
+
+	public static void saveSettings() {
+		File configFile = new File(configFileName);
+		Properties config = new Properties();
+		try(FileOutputStream ostream = new FileOutputStream(configFile)) {
+			if (null != lastIndexFetchDateTime) {
+				long updated = lastIndexFetchDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+				config.setProperty("indexupdated", Long.toString(updated));
+			}
+			if (language == Language.FINNISH) {
+				config.setProperty("sortorder", "fi");
+			} else if (language == Language.ENGLISH) {
+				config.setProperty("sortorder", "en");
+			}
+			config.store(ostream, "TVT Sanasto asetukset");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
