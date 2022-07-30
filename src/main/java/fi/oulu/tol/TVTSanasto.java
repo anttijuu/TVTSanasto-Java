@@ -27,6 +27,10 @@ import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
 
+// TODO: Add language symbols (flags)
+// TODO: Add error messages
+// TODO: Add functionality to prevent too frequent fetches from server.
+
 public class TVTSanasto implements ActionListener {
 
 	private JFrame frame;
@@ -128,7 +132,7 @@ public class TVTSanasto implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
-
+			// TODO: Implement
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);
 		} else if (e.getActionCommand().equals("sort-en")) {
@@ -146,7 +150,7 @@ public class TVTSanasto implements ActionListener {
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-settings")) {
-
+			// TODO: Implement or replace with menu commands.
 		} else {
 			logger.error("Unknown menu command selected");
 		}
