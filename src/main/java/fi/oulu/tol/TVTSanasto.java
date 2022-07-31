@@ -1,6 +1,10 @@
 package fi.oulu.tol;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -19,8 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.FontFormatException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -36,7 +38,7 @@ import fi.oulu.tol.view.TermListView;
 // TODO: Add error messages
 // TODO: Add functionality to prevent too frequent fetches from server.
 
-public class TVTSanasto implements ActionListener {
+public class TVTSanasto implements ActionListener, WindowListener {
 
 	private JFrame frame;
 	private TermProvider provider;
@@ -146,6 +148,7 @@ public class TVTSanasto implements ActionListener {
 		mainMenu.add(mazeMenu);
 		frame.setJMenuBar(mainMenu);
 		logger.debug("Showing app");
+		frame.addWindowListener(this);
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -177,12 +180,51 @@ public class TVTSanasto implements ActionListener {
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-quit")) {
-			logger.info("Quitting the app");
-			provider.close();
-			frame.dispose();
+			close();
 		} else {
 			logger.error("Unknown menu command selected");
 		}
+	}
+
+	private void close() {
+		logger.info("Quitting the app");
+		provider.close();
+		frame.dispose();
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// Empty
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		close();
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// Empty
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// Empty
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// Empty
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// Empty
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// Empty
 	}
 
 }
