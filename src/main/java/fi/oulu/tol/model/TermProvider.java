@@ -2,6 +2,10 @@ package fi.oulu.tol.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +34,8 @@ public class TermProvider {
 	private Language sortOrder = Settings.language;
 	private String searchFilter = "";
 
+	private static final int FETCH_TIME_GAP_HOURS = 6; // hrs between network fetches.
+
 	private static final Logger logger = LogManager.getLogger(TermProvider.class);
 	
 	public TermProvider() throws SQLException, IOException {
@@ -52,12 +58,25 @@ public class TermProvider {
 		database.close();
 	}
 
-	public void fetchIndex() throws SQLException, IOException {
+	public int fetchIndex() throws SQLException, IOException {
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+		// If no categories locally, do always fetch. Otherwise check if fetching too frequently.
+		if (!categoriesAndTerms.isEmpty()) {
+			Duration diff = Duration.between(Settings.lastIndexFetchDateTime, now);
+			if (diff.toHours() < FETCH_TIME_GAP_HOURS) {
+				logger.info("Not fetching until after timeout from previous fetch.");
+				return -1;
+			}
+		}
 		logger.info("Fetching remote category index.");
+		int currentCount = categoriesAndTerms.size();
 		List<TermCategory> categories = network.getIndex();
 		logger.info("Saving categories to local db.");
 		database.saveCategories(categories);
 		updateMap(categories);
+		Settings.lastIndexFetchDateTime = LocalDateTime.now(ZoneOffset.UTC);
+		Settings.saveSettings();
+		return categories.size() - currentCount;
 	}
 
 	public List<TermCategory> getCategories() {
@@ -65,13 +84,20 @@ public class TermProvider {
 	}
 
 	public List<Term> getSelectedCategoryTerms() throws SQLException, JSONException, IOException {
+		if (selectedCategory == null) {
+			return new ArrayList<>();
+		}
 		List<Term> terms = categoriesAndTerms.get(selectedCategory);
-		if (terms.isEmpty()) {
+		if (terms != null) {
 			terms = database.readTerms(selectedCategory.id);
 			if (terms.isEmpty()) {
 				terms = fetchTerms(selectedCategory);
 			}
-			categoriesAndTerms.put(selectedCategory, terms.stream().sorted(comparator()).toList());
+			if (!terms.isEmpty()) {
+				categoriesAndTerms.put(selectedCategory, terms.stream().sorted(comparator()).toList());
+			}
+		} else {
+			terms = new ArrayList<>();
 		}
 		if (searchFilter.length() > 0) {
 			return terms.stream().filter(term -> term.description().contains(searchFilter)).toList();
@@ -87,11 +113,21 @@ public class TermProvider {
 	}
 
 	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
+		if (null == category) {
+			return new ArrayList<>();
+		}
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+		Duration diff = Duration.between(category.updated, now);
+		if (diff.toHours() < FETCH_TIME_GAP_HOURS) {
+			logger.info("Not fetching the category until after timeout from previous fetch.");
+			return new ArrayList<>();
+		}
 		logger.info("Fetching terms from remote.");
 		List<Term> fetchedTerms = network.getTerms(category.termsURL).stream().sorted(comparator()).toList();
+		category.updated = now;
 		categoriesAndTerms.put(category, fetchedTerms);
 		logger.info("Saving fetched terms to the local db.");
-		database.saveTerms(fetchedTerms, category.id);
+		database.saveTerms(fetchedTerms, category);
 		return fetchedTerms;
 	}
 
@@ -99,7 +135,7 @@ public class TermProvider {
 		return selectedTerm;
 	}
 
-	private void updateMap(List<TermCategory> fromCategories) throws JSONException, IOException, SQLException {
+	private void updateMap(List<TermCategory> fromCategories) {
 		for (TermCategory category : fromCategories) {
 			if (!categoriesAndTerms.containsKey(category)) {
 				logger.info("Adding a new category to map.");

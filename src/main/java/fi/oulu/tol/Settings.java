@@ -42,7 +42,7 @@ public class Settings {
 				language = Language.ENGLISH;
 			}
 		} catch (IOException e) {
-			language = language.FINNISH;
+			language = Language.FINNISH;
 			lastIndexFetchDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(557442000000L), ZoneOffset.UTC);
 		}
 	}

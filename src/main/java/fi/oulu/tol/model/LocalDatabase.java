@@ -11,17 +11,23 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LocalDatabase {
 
 	private Connection connection = null;
 
+	private static final Logger logger = LogManager.getLogger(LocalDatabase.class);
+
 	public void open(String dbName) throws SQLException {
+		logger.info("Openging a database file " + dbName);
 		boolean createDatabase = false;
 		File file = new File(dbName);
 		if (!file.exists() && !file.isDirectory()) {
+			logger.info("Db file does not exist, create it");
 			createDatabase = true;
 		}
 		String database = "jdbc:sqlite:" + dbName;
@@ -34,6 +40,7 @@ public class LocalDatabase {
 	public void close() {
 		if (null != connection) {
 			try {
+				logger.debug("Closing the db connection");
 				connection.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -43,8 +50,8 @@ public class LocalDatabase {
 	}
 
 	public List<TermCategory> readCategories() throws SQLException {
+		logger.debug("Reading all categories from db");
 		List<TermCategory> categories = new ArrayList<>();
-
 		String queryMessages = "select * from category";
 		Statement queryStatement = connection.createStatement();
 		ResultSet rs = queryStatement.executeQuery(queryMessages);
@@ -64,11 +71,13 @@ public class LocalDatabase {
 			category.updated = LocalDateTime.ofInstant(Instant.ofEpochMilli(updated), ZoneOffset.UTC);
 			categories.add(category);
 		}
+		logger.debug(String.format("Read %d categories", categories.size()));
 		queryStatement.close();
 		return categories;
 	}
 
 	public TermCategory readCategory(String withID) throws SQLException {
+		logger.debug("Reading a single category from db");
 		String query = "select * from category where id = ?";
 		TermCategory category = null;
 		PreparedStatement queryStatement = connection.prepareStatement(query);
@@ -94,6 +103,7 @@ public class LocalDatabase {
 	}
 
 	public void saveCategories(List<TermCategory> categories) throws SQLException {
+		logger.debug("Saving categories to db");
 		String insertMsgStatement = "insert into category (id, nameEn, nameFi, nameSe, termsUrl, updated)"
 				+ " values(?, ?, ?, ?, ?, ?) on conflict (id) do update" + " set nameEn = excluded.nameEn,"
 				+ " nameFi = excluded.nameFi," + " nameSe = excluded.nameSe," + " termsUrl = excluded.termsUrl";
@@ -113,6 +123,7 @@ public class LocalDatabase {
 	}
 
 	public List<Term> readTerms(String forCategoryId) throws SQLException {
+		logger.debug("Reading terms for a category from db: " + forCategoryId);
 		List<Term> terms = new ArrayList<>();
 		String query = "select * from term where category = ?";
 		Term term = null;
@@ -139,7 +150,8 @@ public class LocalDatabase {
 		return terms;
 	}
 
-	public void saveTerms(List<Term> terms, String inCategoryId) throws SQLException {
+	public void saveTerms(List<Term> terms, TermCategory category) throws SQLException {
+		logger.debug("Saving terms for a category to db");
 		String insertTermStatement = "insert into term (id, english, finnish, englishLink, finnishLink, definition, category)"
 				+ " values(?, ?, ?, ?, ?, ?, ?) on conflict (id, category) do update set english = excluded.english,"
 				+ " finnish = excluded.finnish, englishLink = excluded.englishLink, finnishLink = excluded.finnishLink, definition = excluded.definition";
@@ -152,20 +164,21 @@ public class LocalDatabase {
 			createStatement.setString(4, term.englishLink);
 			createStatement.setString(5, term.finnishLink);
 			createStatement.setString(6, term.definition);
-			createStatement.setString(7, inCategoryId);
+			createStatement.setString(7, category.id);
 			createStatement.executeUpdate();
 		}
 		createStatement.close();
+		logger.debug("Updating the category update datatime to db");
 		String updateStatement = "update category set updated = ? where id = ?";
 		PreparedStatement update = connection.prepareStatement(updateStatement);
-		Date now = new Date();
-		update.setLong(1, now.toInstant().atOffset(ZoneOffset.UTC).toEpochSecond());
-		update.setString(2, inCategoryId);
+		update.setLong(1, category.updated.toInstant(ZoneOffset.UTC).toEpochMilli());
+		update.setString(2, category.id);
 		update.executeUpdate();
 		update.close();
 	}
 
 	private boolean initializeDatabase() throws SQLException {
+		logger.info("Initializing the database tables");
 		if (null != connection) {
 			String createUsersString = "create table category " + "(id varchar(32) NOT NULL, "
 					+ "nameEn varchar(32) NOT NULL, " + "nameFi varchar(32) NOT NULL, " + "nameSe varchar(32) NOT NULL, "
@@ -184,6 +197,7 @@ public class LocalDatabase {
 			createStatement.close();
 			return true;
 		}
+		logger.warn("db connection was null, db not initialized");
 		return false;
 	}
 

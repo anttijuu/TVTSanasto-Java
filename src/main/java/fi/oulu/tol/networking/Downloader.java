@@ -20,6 +20,8 @@ import java.net.URL;
 import fi.oulu.tol.model.Term;
 import fi.oulu.tol.model.TermCategory;
 
+// TODO: Make network ops asycnhronous?
+
 public class Downloader {
 	private static final String INDEX_URL = "https://juustila.com/apps/tira-sanasto/test-index.json";
 	private static final String CONTENT_TYPE = "application/json";

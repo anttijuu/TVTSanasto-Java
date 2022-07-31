@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
@@ -27,16 +28,16 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import fi.oulu.tol.model.Language;
+import fi.oulu.tol.model.Term;
 import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
 
 // TODO: Add language symbols (flags)
-// TODO: Add error messages
-// TODO: Add functionality to prevent too frequent fetches from server.
 
 public class TVTSanasto implements ActionListener, WindowListener {
 
@@ -156,7 +157,10 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
-			// TODO: Implement
+			final String aboutText = "Tietotekniikan termejä oppijoille.\n" +
+											 "Lisätietoja sovelluksesta ja sanastoista: " + 
+											 "https://gitlab.com/sanasto/sanasto-swing/";
+			JOptionPane.showMessageDialog(frame, aboutText, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);
 			Settings.language = Language.FINNISH;
@@ -167,15 +171,26 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			Settings.saveSettings();
 		} else if (e.getActionCommand().equals("cmd-refresh-index")) {
 			try {
-				provider.fetchIndex();
-				Settings.lastIndexFetchDateTime = LocalDateTime.now(ZoneOffset.UTC);
-				Settings.saveSettings();
+				int newCategories = provider.fetchIndex();
+				if (newCategories > 0) {
+					String message = String.format("Haettiin %d uutta kategoriaa", newCategories);
+					JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(frame, "Ei uusia termikategorioita", "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
+				}
 			} catch (SQLException | IOException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-refresh-category")) {
 			try {
-				provider.fetchTerms(provider.getSelectedCategory());
+				int oldTermCount = provider.getSelectedCategoryTerms().size();
+				List<Term> terms = provider.fetchTerms(provider.getSelectedCategory());
+				if (terms.isEmpty()) {
+					JOptionPane.showMessageDialog(frame, "Ei uusia termejä", "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					String message = String.format("Haettiin %d uutta termiä", terms.size() - oldTermCount);
+					JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
+				}
 			} catch (SQLException | IOException e1) {
 				e1.printStackTrace();
 			}
