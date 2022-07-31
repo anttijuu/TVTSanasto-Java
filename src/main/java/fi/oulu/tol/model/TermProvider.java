@@ -45,6 +45,13 @@ public class TermProvider {
 		}
 	}
 
+	public void close() {
+		logger.debug("Clearing the observers");
+		observers.clear();
+		logger.debug("Closing the database.");
+		database.close();
+	}
+
 	public void fetchIndex() throws SQLException, IOException {
 		logger.info("Fetching remote category index.");
 		List<TermCategory> categories = network.getIndex();
@@ -79,20 +86,6 @@ public class TermProvider {
 		return (p1, p2) -> { return p1.english.toLowerCase().compareTo(p2.english.toLowerCase()); };
 	}
 
-	// private List<Term> sorted(List<Term> terms) {
-	// 	if (sortOrder == Language.FINNISH) {
-	// 		Collections.sort(terms, (p1, p2) -> { return p1.finnish.toLowerCase().compareTo(p2.finnish.toLowerCase()); });
-	// 	} else if (sortOrder == Language.ENGLISH) {
-	// 		Collections.sort(terms, (p1, p2) -> { return p1.english.toLowerCase().compareTo(p2.english.toLowerCase()); });
-	// 	}
-	// 	return terms;
-	// }
-
-	// private List<Term> filter(List<Term> terms) {
-	// 	terms.removeIf(term -> !term.description().contains(searchFilter) );
-	// 	return terms;
-	// }
-
 	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
 		logger.info("Fetching terms from remote.");
 		List<Term> fetchedTerms = network.getTerms(category.termsURL).stream().sorted(comparator()).toList();
@@ -101,16 +94,6 @@ public class TermProvider {
 		database.saveTerms(fetchedTerms, category.id);
 		return fetchedTerms;
 	}
-
-	// public List<Term> getTerms(TermCategory forCategory) {
-	// 	if (searchFilter.length() == 0) {
-	// 		return categoriesAndTerms.get(forCategory);
-	// 	} else {
-	// 		List<Term> filtered = categoriesAndTerms.get(forCategory);
-	// 		filtered.removeIf(term -> !term.description().contains(searchFilter) );
-	// 		return filtered;
-	// 	}
-	// }
 
 	public Term getSelectedTerm() {
 		return selectedTerm;

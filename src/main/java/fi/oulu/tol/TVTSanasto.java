@@ -2,11 +2,14 @@ package fi.oulu.tol;
 
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -22,7 +25,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.TimeZone;
 
 import fi.oulu.tol.model.Language;
 import fi.oulu.tol.model.TermProvider;
@@ -65,11 +67,13 @@ public class TVTSanasto implements ActionListener {
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
 		frame = new JFrame("TVT Sanasto");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
 
 		JSplitPane rootPanel = new JSplitPane();
 		rootPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		JPanel searchPanel = new JPanel();
+		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
 		JTextField searchField = new JTextField();
 		searchField.addActionListener(new ActionListener() {
 			@Override
@@ -78,7 +82,18 @@ public class TVTSanasto implements ActionListener {
 			}
 		});
 		searchField.setToolTipText("Etsi termejä");
-		rootPanel.setTopComponent(searchField);
+		searchField.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH - 100, 16));
+		JButton clearButton = new JButton("Tyhjennä");
+		clearButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchField.setText("");
+				provider.setSearchFilter("");	
+			}
+		});
+		searchPanel.add(searchField);
+		searchPanel.add(clearButton);
+		rootPanel.setTopComponent(searchPanel);
 
 		JSplitPane categoryPanel = new JSplitPane();
 		frame.getContentPane().add(rootPanel);
@@ -124,8 +139,8 @@ public class TVTSanasto implements ActionListener {
 		commandMenu.addActionListener(this);
 		mazeMenu.add(commandMenu);
 		mazeMenu.addSeparator();
-		commandMenu = new JMenuItem("Asetukset");
-		commandMenu.setActionCommand("cmd-settings");
+		commandMenu = new JMenuItem("Lopeta");
+		commandMenu.setActionCommand("cmd-quit");
 		commandMenu.addActionListener(this);
 		mazeMenu.add(commandMenu);
 		mainMenu.add(mazeMenu);
@@ -161,8 +176,10 @@ public class TVTSanasto implements ActionListener {
 			} catch (SQLException | IOException e1) {
 				e1.printStackTrace();
 			}
-		} else if (e.getActionCommand().equals("cmd-settings")) {
-			// TODO: Implement or replace with menu commands.
+		} else if (e.getActionCommand().equals("cmd-quit")) {
+			logger.info("Quitting the app");
+			provider.close();
+			frame.dispose();
 		} else {
 			logger.error("Unknown menu command selected");
 		}
