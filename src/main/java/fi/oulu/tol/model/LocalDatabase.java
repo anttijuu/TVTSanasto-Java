@@ -180,20 +180,20 @@ public class LocalDatabase {
 	private boolean initializeDatabase() throws SQLException {
 		logger.info("Initializing the database tables");
 		if (null != connection) {
-			String createUsersString = "create table category " + "(id varchar(32) NOT NULL, "
+			String createCategoryTable = "create table category " + "(id varchar(32) NOT NULL, "
 					+ "nameEn varchar(32) NOT NULL, " + "nameFi varchar(32) NOT NULL, " + "nameSe varchar(32) NOT NULL, "
 					+ "termsUrl varchar(32) NOT NULL, " + "updated integer NOT NULL, " + "PRIMARY KEY (id))";
 			Statement createStatement = connection.createStatement();
-			createStatement.executeUpdate(createUsersString);
+			createStatement.executeUpdate(createCategoryTable);
 			createStatement.close();
 			createStatement = connection.createStatement();
-			String createChatsString = "create table term " + "(id varchar(32) NOT NULL, "
+			String createTermTable = "create table term " + "(id varchar(32) NOT NULL, "
 					+ "english varchar(32) NOT NULL, " + "finnish varchar(32) NOT NULL, "
 					+ "englishLink varchar(64) NOT NULL, " + "finnishLink varchar(64) NOT NULL, "
 					+ "definition varchar(1000) NOT NULL, " + "category varchar(32) NOT NULL, "
 					+ "PRIMARY KEY(id,category), "
 					+ "FOREIGN KEY (category) REFERENCES category (id) ON UPDATE CASCADE ON DELETE CASCADE)";
-			createStatement.executeUpdate(createChatsString);
+			createStatement.executeUpdate(createTermTable);
 			createStatement.close();
 			return true;
 		}

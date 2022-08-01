@@ -29,7 +29,7 @@ Project is managed using Maven, so the dependencies that are automatically insta
 
 ![architecture diagram](architecture.png)
 
-You can find a rough class diagram of the app in `structure.png.` file.
+You can find a rough class diagram of the app in `structure.png` file.
 
 ## Building and running
 
@@ -58,4 +58,4 @@ The copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 Dependent components are copyright of the respective license holders.
-For details, see components.
+For details, see component documentation.
