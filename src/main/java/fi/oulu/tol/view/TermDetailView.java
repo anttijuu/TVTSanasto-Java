@@ -11,6 +11,8 @@ import java.awt.Desktop;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -55,10 +57,14 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		add(Box.createRigidArea(new Dimension(0, 10)));
 		JSeparator separator = new JSeparator();
 		add(separator);
-		labelEnglish = new JLabel();
+		
+		Icon flagFi = new ImageIcon(ClassLoader.getSystemResource("images/fi.png"));
+		Icon flagEn = new ImageIcon(ClassLoader.getSystemResource("images/en.png"));
+		
+		labelEnglish = new JLabel(flagEn, JLabel.LEADING);
 		labelEnglish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelEnglish);
-		labelFinnish = new JLabel();
+		labelFinnish = new JLabel(flagFi, JLabel.LEADING);
 		labelFinnish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelFinnish);
 		add(Box.createRigidArea(new Dimension(0, 10)));

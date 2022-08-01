@@ -8,6 +8,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -25,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.FontFormatException;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -34,8 +37,6 @@ import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
-
-// TODO: Add language symbols (flags)
 
 public class TVTSanasto implements ActionListener, WindowListener {
 
@@ -117,13 +118,16 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		mazeMenu.add(commandMenu);
 		mazeMenu.addSeparator();
 
+		Icon flagFi = new ImageIcon(ClassLoader.getSystemResource("images/fi.png"));
+		Icon flagEn = new ImageIcon(ClassLoader.getSystemResource("images/en.png"));
+
 		ButtonGroup group = new ButtonGroup();
-		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", provider.getSortOrder() == Language.FINNISH);
+		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", flagFi, provider.getSortOrder() == Language.FINNISH);
 		radioMenu.setActionCommand("sort-fi");
 		radioMenu.addActionListener(this);
 		group.add(radioMenu);
 		mazeMenu.add(radioMenu);
-		radioMenu = new JRadioButtonMenuItem("Englanti", provider.getSortOrder() == Language.ENGLISH);
+		radioMenu = new JRadioButtonMenuItem("Englanti", flagEn, provider.getSortOrder() == Language.ENGLISH);
 		radioMenu.addActionListener(this);
 		radioMenu.setActionCommand("sort-en");
 		group.add(radioMenu);
@@ -179,10 +183,20 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				} else {
 					JOptionPane.showMessageDialog(frame, "Ei uusia termikategorioita", "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 				}
-			} catch (SQLException | IOException e1) {
+			} catch (UnknownHostException e1) {
+				String message = String.format("Palvelinta ei löydy: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				String message = String.format("Tietokantavirhe: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				String message = String.format("Virhe luettaessa kategorioita: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
-		} else if (e.getActionCommand().equals("cmd-refresh-category")) {
+	} else if (e.getActionCommand().equals("cmd-refresh-category")) {
 			try {
 				int oldTermCount = provider.getSelectedCategoryTerms().size();
 				List<Term> terms = provider.fetchTerms(provider.getSelectedCategory());
@@ -193,6 +207,8 @@ public class TVTSanasto implements ActionListener, WindowListener {
 					JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 				}
 			} catch (SQLException | IOException e1) {
+				String message = String.format("Virhe haettaessa termejä: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-quit")) {

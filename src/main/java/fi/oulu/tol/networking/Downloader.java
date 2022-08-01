@@ -17,13 +17,14 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import fi.oulu.tol.Settings;
 import fi.oulu.tol.model.Term;
 import fi.oulu.tol.model.TermCategory;
 
 // TODO: Make network ops asycnhronous?
 
 public class Downloader {
-	private static final String INDEX_URL = "https://juustila.com/apps/tira-sanasto/test-index.json";
+	
 	private static final String CONTENT_TYPE = "application/json";
 
 	private static final int CONNECT_TIMEOUT = 10 * 1000;
@@ -32,8 +33,8 @@ public class Downloader {
 	private static final Logger logger = LogManager.getLogger(Downloader.class);
 
 	public synchronized List<TermCategory> getIndex() throws IOException {
-		logger.info("Starting to fetch term indices from " + INDEX_URL);
-		HttpsURLConnection connection = setupConnection(INDEX_URL);
+		logger.info("Starting to fetch term indices from " + Settings.mainIndexJSONFileURL);
+		HttpsURLConnection connection = setupConnection(Settings.mainIndexJSONFileURL);
 		List<TermCategory> results = new ArrayList<>();
 		int responseCode = connection.getResponseCode();
 		logger.info("HTTPS response code: " + responseCode);

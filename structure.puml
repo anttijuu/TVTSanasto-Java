@@ -1,48 +1,54 @@
 @startuml
-package fi.oulu.tol.model {
+package fi.oulu.tol {
+	package fi.oulu.tol.model {
 
-	enum Language {
-		FINNISH
-		ENGLISH
+		enum Language {
+			FINNISH
+			ENGLISH
+		}
+		class Term
+		class TermCategory
+		class LocalDatabase
+		class TermProvider {
+			-categoriesAndTerms: Map<TermCategory, List<Term>>
+		}
+		interface TermProviderObserver
+
+		TermProvider *--> LocalDatabase
+		TermProvider *--> TermProviderObserver: observers
+		TermCategory ..> Term : has
 	}
-	class Term
-	class TermCategory
-	class LocalDatabase
-	class TermProvider {
-		-categoriesAndTerms: Map<TermCategory, List<Term>>
+
+	package fi.oulu.tol.networking {
+		class Downloader
 	}
-	interface TermProviderObserver
 
-	TermProvider *--> LocalDatabase
-	TermProvider *--> TermProviderObserver: observers
-	TermCategory ..> Term : has 
+	TermProvider *--> Downloader
+
+	package fi.oulu.tol.view {
+		class TermCategoryListModel
+		class TermCategoryListView
+		class CategoryRowRenderer
+		class TermListModel
+		class TermListView
+		class TermDetailView
+		class TermRowRenderer
+		TermCategoryListView --> TermCategoryListModel
+		TermCategoryListView --> CategoryRowRenderer
+		TermListView --> TermListModel
+		TermListView --> TermRowRenderer
+	}
+	TermCategoryListModel ..|> TermProviderObserver
+	TermListModel ..|> TermProviderObserver
+	TermDetailView ..|> TermProviderObserver
+	TermListModel --> Term: terms
+	TermCategoryListModel --> TermCategory: categories
+	class TVTSanasto {
+		+{static}main(args: String[]): void
+	}
+	class Settings
+	TVTSanasto *--> TermProvider
+	TVTSanasto --> fi.oulu.tol.view: manages
+	TermProvider ..> Settings
 }
-
-package fi.oulu.tol.networking {
-	class Downloader
-}
-
-TermProvider *--> Downloader
-
-package fi.oulu.tol.view {
-	class TermCategoryListModel
-	class TermCategoryListView
-	class CategoryRowRenderer
-	class TermListModel
-	class TermListView
-	class TermDetailView
-	class TermRowRenderer
-	TermCategoryListView --> TermCategoryListModel
-	TermCategoryListView --> CategoryRowRenderer
-	TermListView --> TermListModel
-	TermListView --> TermRowRenderer
-}
-class TVTSanasto {
-	+{static}main(args: String[]): void
-}
-class Settings
-TVTSanasto *--> TermProvider
-TVTSanasto --> fi.oulu.tol.view: manages
-TermProvider ..> Settings
-
 @enduml
