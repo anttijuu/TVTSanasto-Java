@@ -26,8 +26,6 @@ import org.apache.logging.log4j.Logger;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import fi.oulu.tol.model.Language;
@@ -159,7 +157,10 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		if (e.getActionCommand().equals("cmd-about")) {
 			final String aboutText = "Tietotekniikan termejä oppijoille.\n" +
 											 "Lisätietoja sovelluksesta ja sanastoista: " + 
-											 "https://gitlab.com/sanasto/sanasto-swing/";
+											 "https://gitlab.com/sanasto/sanasto-swing/" + 
+											 "\n\nAvoimen lähdekoodin lisenssit:\n" + 
+											 "com.github.rjeschke txtmark Copyright (C) 2011-2015 René Jeschke Apache License Version 2.0\n" + 
+											 "org.xerial JDBC SQLite driver Copyright (C) Taro L. Saito Apache License Version 2.0\n";
 			JOptionPane.showMessageDialog(frame, aboutText, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);

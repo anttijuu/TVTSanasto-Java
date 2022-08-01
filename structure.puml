@@ -1,0 +1,48 @@
+@startuml
+package fi.oulu.tol.model {
+
+	enum Language {
+		FINNISH
+		ENGLISH
+	}
+	class Term
+	class TermCategory
+	class LocalDatabase
+	class TermProvider {
+		-categoriesAndTerms: Map<TermCategory, List<Term>>
+	}
+	interface TermProviderObserver
+
+	TermProvider *--> LocalDatabase
+	TermProvider *--> TermProviderObserver: observers
+	TermCategory ..> Term : has 
+}
+
+package fi.oulu.tol.networking {
+	class Downloader
+}
+
+TermProvider *--> Downloader
+
+package fi.oulu.tol.view {
+	class TermCategoryListModel
+	class TermCategoryListView
+	class CategoryRowRenderer
+	class TermListModel
+	class TermListView
+	class TermDetailView
+	class TermRowRenderer
+	TermCategoryListView --> TermCategoryListModel
+	TermCategoryListView --> CategoryRowRenderer
+	TermListView --> TermListModel
+	TermListView --> TermRowRenderer
+}
+class TVTSanasto {
+	+{static}main(args: String[]): void
+}
+class Settings
+TVTSanasto *--> TermProvider
+TVTSanasto --> fi.oulu.tol.view: manages
+TermProvider ..> Settings
+
+@enduml

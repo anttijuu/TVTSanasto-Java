@@ -1,0 +1,26 @@
+@startuml
+node UserPC {
+	component TVTSanasto
+	component SQLite
+	component org.json
+	component rjeschke.txtmark
+	file settings.properties
+	database tvtsanasto.sqlite
+	TVTSanasto --> SQLite: org.xerial JDBC driver
+	SQLite --> tvtsanasto.sqlite
+	TVTSanasto --> org.json: parsing JSON
+	TVTSanasto --> rjeschke.txtmark: markdown to html
+	TVTSanasto --> settings.properties: app settings
+}
+cloud server {
+	file index.json
+	file termcategory.json
+	file anothercategory.json
+	index.json ..> termcategory.json
+	index.json ..> anothercategory.json
+}
+actor User
+
+User -> TVTSanasto
+TVTSanasto ..> server: https
+@enduml
