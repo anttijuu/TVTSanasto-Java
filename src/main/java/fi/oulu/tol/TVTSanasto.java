@@ -195,6 +195,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		logger.info("Quitting the app");
 		provider.close();
 		frame.dispose();
+		logger.info("Main frame disposed, process should end soon.");
 	}
 
 	@Override

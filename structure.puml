@@ -33,11 +33,13 @@ package fi.oulu.tol {
 		class TermListView
 		class TermDetailView
 		class TermRowRenderer
+		class SearchPanel
 		TermCategoryListView --> TermCategoryListModel
 		TermCategoryListView --> CategoryRowRenderer
 		TermListView --> TermListModel
 		TermListView --> TermRowRenderer
 	}
+	SearchPanel ..> TermProvider
 	TermCategoryListModel ..|> TermProviderObserver
 	TermListModel ..|> TermProviderObserver
 	TermDetailView ..|> TermProviderObserver

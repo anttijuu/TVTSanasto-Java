@@ -1,6 +1,6 @@
 # TVT Sanasto
 
-The **TVT Sanasto** Java/Swing app aims to help in learning the basic terms in the area of Information and Communication Technologies (ICT) in Finnish and English. TVT means Tieto- ja viestintäteknologiat (ICT).
+The **TVT Sanasto** Java/Swing app aims to help in learning the basic terms in the area of Information and Communication Technologies (ICT) in Finnish and English. TVT (Finnish) means Tieto- ja viestintäteknologiat (ICT in English).
 
 ![App screenshot](screenshot.png)
 
@@ -10,7 +10,7 @@ The app fetches an index of term categories from a server. This index file is in
 
 App fetches each of the categories and terms listed in the index file, parses the JSON files and stores the categories and terms in the user's computer in a SQLite database. The terms can then be studied without network connection or consuming the network bandwidth. User can later fetch updates (if any) both to the index and the categories of terms by using the menus in the app.
 
-User may also sort the terms by language and search the terms using keywords. App then lists only those terms containing the keyword.
+User may also sort the terms by language and search the terms. App then lists only those terms containing the searched word.
 
 ## Dependencies
 
@@ -18,9 +18,9 @@ The app uses the following Java version 18 features and components:
 
 * Java SE JDK version 18 or newer from https://openjdk.org/install/ 
 * Maven for project configuration from https://maven.apache.org/install.html 
+* SQLite runtime. If not already installed, get it from https://www.sqlite.org,
 * AWT and Swing for the user interface (included in the Java JDK),
 * org.json for parsing JSON content (installed by Maven automatically),
-* SQLite runtime. If not already installed, get it from https://www.sqlite.org,
 * org.xerial JDBC driver for SQLite (installed by Maven automatically),
 * Apache log4j for logging (latest version with fixes to the recent vulnerabilities found, installed by Maven automatically),
 * com.github.rjeschke txtmark for converting markdown text formatting to HTML in Swing JEditorPane (installed by Maven automatically).
@@ -54,7 +54,7 @@ The first time the app is executed, it will download the index and term JSON fil
 
 As mentioned, terms and categories are server hosted JSON files. If you are interested in contributing to the existing terms JSON files or creating new ones, please contact me.
 
-If you wish to support other languages than Finnish/English, please do fork the project and modify it to your needs and create the necessary JSON files for your preferred languages.
+If you wish to support other languages than Finnish/English, feel free to fork the project (it is MIT licensed) and modify it to your needs and create the necessary JSON files for your preferred languages.
 
 ## License
 
