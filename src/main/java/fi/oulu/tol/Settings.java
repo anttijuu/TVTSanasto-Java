@@ -25,7 +25,7 @@ public class Settings {
 	public static int LIST_WIDTH = 250;
 	public static Language language = Language.FINNISH;
 	public static LocalDateTime lastIndexFetchDateTime = null;
-	private static final String DEFAULT_JSON_INDEX_URL = "https://juustila.com/apps/tira-sanasto/test-index.json";
+	private static final String DEFAULT_JSON_INDEX_URL = "https://gitlab.com/sanasto/index/-/raw/main/index.json";
 	public static String mainIndexJSONFileURL = null;
 
 	private static final String configFileName = "settings.properties";
