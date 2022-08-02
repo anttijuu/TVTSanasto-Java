@@ -55,11 +55,11 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 
 	@Override
 	public void changeEvent(Topic topic) {
-		if (topic == Topic.SELECTED_CATEGORY_CHANGED) {
+		if (topic == Topic.SELECTED_CATEGORY_CHANGED || topic == Topic.CATEGORY_TERMS_CHANGED) {
 			try {
 				this.terms = provider.getSelectedCategoryTerms();
 				for (ListDataListener listener : listeners) {
-					listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, terms.size() - 1));
+					listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, terms.size()));
 				}
 			} catch (JSONException | SQLException | IOException e) {
 				e.printStackTrace();
@@ -68,7 +68,7 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 			try {
 				this.terms = provider.getSelectedCategoryTerms();
 				for (ListDataListener listener : listeners) {
-					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, terms.size() - 1));
+					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, terms.size()));
 				}
 			} catch (JSONException | SQLException | IOException e) {
 				e.printStackTrace();

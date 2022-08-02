@@ -6,26 +6,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.FontFormatException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -37,6 +32,7 @@ import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
+import fi.oulu.tol.view.SearchPanel;
 
 public class TVTSanasto implements ActionListener, WindowListener {
 
@@ -54,13 +50,10 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		} catch (IOException e) {
 			logger.error("IOException in app, exiting");
 			e.printStackTrace();
-		} catch (FontFormatException e) {
-			logger.error("FontFormatException in app, exiting");
-			e.printStackTrace();
 		}
 	}
 
-	private void run() throws SQLException, IOException, FontFormatException {
+	private void run() throws SQLException, IOException {
 		logger.debug("Reading settings");
 		Settings.readSettings();
 		logger.info("Index last fetched: " + Settings.lastIndexFetchDateTime.toString());
@@ -74,27 +67,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 
 		JSplitPane rootPanel = new JSplitPane();
 		rootPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		JPanel searchPanel = new JPanel();
-		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
-		JTextField searchField = new JTextField();
-		searchField.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				provider.setSearchFilter(searchField.getText().trim().toLowerCase());
-			}
-		});
-		searchField.setToolTipText("Etsi termejä");
-		searchField.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH - 100, 16));
-		JButton clearButton = new JButton("Tyhjennä");
-		clearButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchField.setText("");
-				provider.setSearchFilter("");	
-			}
-		});
-		searchPanel.add(searchField);
-		searchPanel.add(clearButton);
+		SearchPanel searchPanel = new SearchPanel(provider);
 		rootPanel.setTopComponent(searchPanel);
 
 		JSplitPane categoryPanel = new JSplitPane();

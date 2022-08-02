@@ -47,6 +47,7 @@ public class TermProvider {
 			logger.info("No categories in local db, fetching remote index.");
 			fetchIndex();
 		} else {
+			logger.debug("Putting the categories from db to model");
 			updateMap(categories);
 		}
 	}
@@ -56,6 +57,7 @@ public class TermProvider {
 		observers.clear();
 		logger.debug("Closing the database.");
 		database.close();
+		logger.info("Closed the TermProvider");
 	}
 
 	public int fetchIndex() throws SQLException, IOException {
@@ -85,21 +87,26 @@ public class TermProvider {
 
 	public List<Term> getSelectedCategoryTerms() throws SQLException, JSONException, IOException {
 		if (selectedCategory == null) {
+			logger.debug("No selected category, returning empty list of terms");
 			return new ArrayList<>();
 		}
 		List<Term> terms = categoriesAndTerms.get(selectedCategory);
 		if (terms != null) {
 			terms = database.readTerms(selectedCategory.id);
 			if (terms.isEmpty()) {
+				logger.debug("No terms in db for category, fetching " + selectedCategory.id);
 				terms = fetchTerms(selectedCategory);
 			}
 			if (!terms.isEmpty()) {
+				logger.debug("Db or server gave non-empty list of terms, taking into use");
 				categoriesAndTerms.put(selectedCategory, terms.stream().sorted(comparator()).toList());
 			}
 		} else {
+			logger.debug("No terms for this (nonexistent?) category, returning empty list of terms");
 			terms = new ArrayList<>();
 		}
 		if (searchFilter.length() > 0) {
+			logger.debug("Search filter used, filtering terms");
 			return terms.stream().filter(term -> term.description().contains(searchFilter)).toList();
 		}
 		return terms;
@@ -122,7 +129,7 @@ public class TermProvider {
 			logger.info("Not fetching the category until after timeout from previous fetch.");
 			return new ArrayList<>();
 		}
-		logger.info("Fetching terms from remote.");
+		logger.info("Fetching terms from remote server");
 		List<Term> fetchedTerms = network.getTerms(category.termsURL).stream().sorted(comparator()).toList();
 		category.updated = now;
 		categoriesAndTerms.put(category, fetchedTerms);
@@ -170,6 +177,7 @@ public class TermProvider {
 
 	public void setSortOrder(Language order) {
 		if (order != sortOrder) {
+			logger.debug("Sorting all the terms since sort order changed");
 			sortOrder = order;
 			for (Map.Entry<TermCategory, List<Term>> entry : categoriesAndTerms.entrySet()) {
 				TermCategory category = entry.getKey();
@@ -182,8 +190,9 @@ public class TermProvider {
 
 	public void setSearchFilter(String filter) {
 		if (!searchFilter.equals(filter)) {
+			logger.debug("Setting the search filter to " + filter);
 			searchFilter = filter;
-			notifyObservers(Topic.SELECTED_CATEGORY_CHANGED);
+			notifyObservers(Topic.CATEGORY_TERMS_CHANGED);
 		}
 	}
 
