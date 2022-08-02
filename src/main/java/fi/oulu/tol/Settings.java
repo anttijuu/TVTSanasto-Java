@@ -28,10 +28,10 @@ public class Settings {
 	private static final String DEFAULT_JSON_INDEX_URL = "https://gitlab.com/sanasto/index/-/raw/main/index.json";
 	public static String mainIndexJSONFileURL = null;
 
-	private static final String configFileName = "settings.properties";
+	private static final String CONFIGURATION_FILE_NAME = "settings.properties";
 
 	public static void readSettings() {
-		File configFile = new File(configFileName);
+		File configFile = new File(CONFIGURATION_FILE_NAME);
 		Properties config = new Properties();
 		try(FileInputStream istream = new FileInputStream(configFile)) {
 			config.load(istream);
@@ -59,7 +59,7 @@ public class Settings {
 	}
 
 	public static void saveSettings() {
-		File configFile = new File(configFileName);
+		File configFile = new File(CONFIGURATION_FILE_NAME);
 		Properties config = new Properties();
 		try(FileOutputStream ostream = new FileOutputStream(configFile)) {
 			if (null != lastIndexFetchDateTime) {
