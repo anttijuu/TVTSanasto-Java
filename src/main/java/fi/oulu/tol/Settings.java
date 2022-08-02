@@ -13,11 +13,9 @@ import java.util.Properties;
 
 import fi.oulu.tol.model.Language;
 
-// TODO: put the index JSON URL in settings so it can be changed?
-//   Default index URL hardcoded here.
-
 public class Settings {
 	private Settings() {
+		// Empty
 	}
 
 	public static int WINDOW_WIDTH = 1200;
