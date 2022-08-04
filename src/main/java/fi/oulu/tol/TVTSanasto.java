@@ -26,13 +26,14 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.List;
 
+import fi.oulu.tol.model.TermGraphGenerator;
 import fi.oulu.tol.model.Language;
 import fi.oulu.tol.model.Term;
 import fi.oulu.tol.model.TermProvider;
+import fi.oulu.tol.model.TermGraphGenerator.GraphGeneratorException;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
-import fi.oulu.tol.view.GraphTerms;
 import fi.oulu.tol.view.SearchPanel;
 
 public class TVTSanasto implements ActionListener, WindowListener {
@@ -191,13 +192,24 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-create-graph")) {
+			String error = null;
+			String graphVizError = "";
 			try {
-				new GraphTerms(provider).buildGraph();
+				new TermGraphGenerator(provider).buildGraph();
 			} catch (IOException e1) {
 				e1.printStackTrace();
+				error = e1.getMessage();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				error = e1.getMessage();
+			} catch (GraphGeneratorException e1) {
+				e1.printStackTrace();
+				error = e1.getMessage();
+				graphVizError = "Onko GraphViz asennettu ja käytettävissä komentoriviltä?";
+			}
+			if (null != error) {
+				String message = String.format("Termiverkkoa ei saatu luotua.\n%s\nVirhe: %s", graphVizError, error);
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getActionCommand().equals("cmd-quit")) {
 			close();
