@@ -8,11 +8,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.swing.JFrame;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fi.oulu.tol.Settings;
 import fi.oulu.tol.model.Language;
@@ -25,19 +24,24 @@ public class GraphTerms {
 	private BufferedWriter writer;
 	private String oldSearchFilter;
 
+	private static final Logger logger = LogManager.getLogger(GraphTerms.class);
+
 	public GraphTerms(TermProvider provider) {
 		this.provider = provider;
 	}
 
 	public void buildGraph() throws IOException, SQLException {
+		logger.info("Starting to build a GraphViz graph");
 		writeHeader();
 		writeTerms();
 		writeFooter();
 		generateImage();
 		openImage();
+		logger.info("Graph image generated");
 	}
 
 	private void writeHeader() throws IOException {
+		logger.debug("Writing the header");
 		oldSearchFilter = provider.getSearchFilter();
 		writer = new BufferedWriter(new FileWriter("graph.dot", StandardCharsets.UTF_8));
 		writer.write("digraph \"" + provider.getSelectedCategory().toString() + "\" {\n");
@@ -46,6 +50,7 @@ public class GraphTerms {
 	}
 
 	private void writeTerms() throws IOException, SQLException {
+		logger.debug("Writing the terms to .dot file");
 		List<Term> allTerms = provider.getSelectedCategoryTerms();
 		for (final Term term : allTerms) {
 			String termString;
@@ -70,12 +75,14 @@ public class GraphTerms {
 	}
 
 	private void writeFooter() throws IOException {
+		logger.debug("Writing the end of the .dot file");
 		writer.write("}");
 		writer.close();
 		provider.setSearchFilter(oldSearchFilter);
 	}
 
 	private void generateImage() {
+		logger.debug("Generating the image file using graphviz dot");
 		// TODO: Check if need to add "cmd" as the first command.
 		String command[] = { "dot", "graph.dot", "-Tpng", "-ograph.png" };
 		try {
@@ -84,23 +91,26 @@ public class GraphTerms {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
+				logger.debug(" dot output: " + line);
 			}
 			reader.close();
 
 			int exitValue = process.waitFor();
 			if (exitValue != 0) {
-				System.out.println("Abnormal process termination");
+				logger.error("Abnormal process termination: " + exitValue);
 			}
 		} catch (IOException e) {
+			logger.error("Could not generate the image: " + e.getMessage());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			logger.error("Error in process management in image generation: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	private void openImage() {
 		// TODO: Check if need to add "cmd" as the first command.
+		logger.debug("Opening the generated image.");
 		String command[] = { "open", "graph.png" };
 		try {
 			Process process = Runtime.getRuntime().exec(command);
@@ -108,17 +118,19 @@ public class GraphTerms {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
+				logger.debug(" open image output: " + line);
 			}
 			reader.close();
 
 			int exitValue = process.waitFor();
 			if (exitValue != 0) {
-				System.out.println("Abnormal process termination");
+				logger.error("Abnormal process termination: " + exitValue);
 			}
 		} catch (IOException e) {
+			logger.error("Could not open the image: " + e.getMessage());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			logger.error("Error in process management in opening image: " + e.getMessage());
 			e.printStackTrace();
 		}
 
