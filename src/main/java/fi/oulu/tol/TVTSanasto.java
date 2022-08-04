@@ -32,6 +32,7 @@ import fi.oulu.tol.model.TermProvider;
 import fi.oulu.tol.view.TermCategoryListView;
 import fi.oulu.tol.view.TermDetailView;
 import fi.oulu.tol.view.TermListView;
+import fi.oulu.tol.view.GraphTerms;
 import fi.oulu.tol.view.SearchPanel;
 
 public class TVTSanasto implements ActionListener, WindowListener {
@@ -117,6 +118,11 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		commandMenu.addActionListener(this);
 		mazeMenu.add(commandMenu);
 		mazeMenu.addSeparator();
+		commandMenu = new JMenuItem("Luo termiverkko");
+		commandMenu.setActionCommand("cmd-create-graph");
+		commandMenu.addActionListener(this);
+		mazeMenu.add(commandMenu);
+		mazeMenu.addSeparator();
 		commandMenu = new JMenuItem("Lopeta");
 		commandMenu.setActionCommand("cmd-quit");
 		commandMenu.addActionListener(this);
@@ -182,6 +188,15 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			} catch (SQLException | IOException e1) {
 				String message = String.format("Virhe haettaessa termejä: %s\n", e1.getLocalizedMessage());
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+		} else if (e.getActionCommand().equals("cmd-create-graph")) {
+			try {
+				new GraphTerms(provider).buildGraph();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-quit")) {

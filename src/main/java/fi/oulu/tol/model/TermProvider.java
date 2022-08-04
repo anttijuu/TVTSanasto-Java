@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -160,6 +161,14 @@ public class TermProvider {
 		}
 	}
 
+	public List<Term> getTermsFor(TermCategory category) {
+		return categoriesAndTerms.get(category);
+	}
+
+	public List<Term> getAllTerms() throws SQLException {
+		return database.readAllTerms();
+	}
+
 	public TermCategory getSelectedCategory() {
 		return selectedCategory;
 	}
@@ -194,6 +203,10 @@ public class TermProvider {
 			searchFilter = filter;
 			notifyObservers(Topic.CATEGORY_TERMS_CHANGED);
 		}
+	}
+
+	public String getSearchFilter() {
+		return searchFilter;
 	}
 
 	public void addObserver(TermProviderObserver observer) {

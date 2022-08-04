@@ -122,6 +122,33 @@ public class LocalDatabase {
 		createStatement.close();
 	}
 
+	public List<Term> readAllTerms() throws SQLException {
+		logger.debug("Reading all terms from db");
+		List<Term> terms = new ArrayList<>();
+		String query = "select * from term";
+		Term term = null;
+		PreparedStatement queryStatement = connection.prepareStatement(query);
+		ResultSet rs = queryStatement.executeQuery();
+		while (rs.next()) {
+			String id = rs.getString("id");
+			String english = rs.getString("english");
+			String finnish = rs.getString("finnish");
+			String englishLink = rs.getString("englishLink");
+			String finnishLink = rs.getString("finnishLink");
+			String definition = rs.getString("definition");
+			term = new Term();
+			term.id = id;
+			term.english = english;
+			term.finnish = finnish;
+			term.englishLink = englishLink;
+			term.finnishLink = finnishLink;
+			term.definition = definition;
+			terms.add(term);
+		}
+		queryStatement.close();
+		return terms;
+	}
+
 	public List<Term> readTerms(String forCategoryId) throws SQLException {
 		logger.debug("Reading terms for a category from db: " + forCategoryId);
 		List<Term> terms = new ArrayList<>();
