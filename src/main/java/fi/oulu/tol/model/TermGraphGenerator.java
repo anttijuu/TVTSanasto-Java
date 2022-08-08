@@ -63,8 +63,8 @@ public class TermGraphGenerator {
 				termString = term.getEnglish().toLowerCase();
 			}
 			String id = cleanIdForGraphViz(term.getId().toLowerCase());
-			writer.write("\t" + id + " [label = \"" + termString + "\"]\n");
 			if (termString.length() > 0) {
+				writer.write("\t" + id + " [label = \"" + termString + "\"]\n");
 				List<Term> referrers = allTerms.stream()
 						.filter(candidateTerm -> candidateTerm.description().toLowerCase().contains(termString)
 								&& candidateTerm != term)
