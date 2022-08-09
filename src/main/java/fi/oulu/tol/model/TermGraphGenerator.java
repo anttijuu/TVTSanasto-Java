@@ -56,15 +56,15 @@ public class TermGraphGenerator {
 		logger.debug("Writing the terms to .dot file");
 		List<Term> allTerms = provider.getSelectedCategoryTerms();
 		for (final Term term : allTerms) {
-			String termString;
-			if (Settings.language == Language.FINNISH) {
-				termString = term.getFinnish().toLowerCase();
-			} else {
-				termString = term.getEnglish().toLowerCase();
-			}
 			String id = cleanIdForGraphViz(term.getId().toLowerCase());
+			String termString = term.getFinnish().toLowerCase();
 			if (termString.length() > 0) {
-				writer.write("\t" + id + " [label = \"" + termString + "\"]\n");
+				writer.write("\t" + 
+								  id + 
+								  " [label = \"" + 
+								  term.getFinnish().toLowerCase() +
+								  "\n" + term.getEnglish().toLowerCase() + 
+								  "\"]\n");
 				List<Term> referrers = allTerms.stream()
 						.filter(candidateTerm -> candidateTerm.description().toLowerCase().contains(termString)
 								&& candidateTerm != term)
