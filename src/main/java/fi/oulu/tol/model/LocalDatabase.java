@@ -19,6 +19,14 @@ import org.apache.logging.log4j.Logger;
 public class LocalDatabase {
 
 	private Connection connection = null;
+	/**
+	 * CURRENT_SCHEMA_VERSION is the current app database schema version.
+	 * If you change the database schema after releasing the app to users,
+	 * you should do that in updateDatabaseSchema(), not in initializeDatabase(). 
+	 * initializeDatabase() should be used only when the installation
+	 * does not have a database file at all.
+	 */
+	private static final int CURRENT_SCHEMA_VERSION = 1;
 
 	private static final Logger logger = LogManager.getLogger(LocalDatabase.class);
 
@@ -35,6 +43,7 @@ public class LocalDatabase {
 		if (createDatabase) {
 			initializeDatabase();
 		}
+		updateDatabaseSchema();
 	}
 
 	public void close() {
@@ -110,8 +119,8 @@ public class LocalDatabase {
 		logger.debug("Saving categories to db");
 		String insertMsgStatement = "insert into category (id, nameEn, nameFi, nameSe, aboutUrl, termsUrl, updated)"
 				+ " values(?, ?, ?, ?, ?, ?, ?) on conflict (id) do update" + " set nameEn = excluded.nameEn,"
-				+ " nameFi = excluded.nameFi," + " nameSe = excluded.nameSe,"
-				+ " aboutUrl = excluded.aboutUrl" + " + termsUrl = excluded.termsUrl";
+				+ " nameFi = excluded.nameFi," + " nameSe = excluded.nameSe," + " aboutUrl = excluded.aboutUrl"
+				+ " + termsUrl = excluded.termsUrl";
 		PreparedStatement createStatement;
 		createStatement = connection.prepareStatement(insertMsgStatement);
 		for (TermCategory category : categories) {
@@ -215,17 +224,16 @@ public class LocalDatabase {
 		if (null != connection) {
 			String createCategoryTable = "create table category " + "(id varchar(32) NOT NULL, "
 					+ "nameEn varchar(32) NOT NULL, " + "nameFi varchar(32) NOT NULL, " + "nameSe varchar(32) NOT NULL, "
-					+ "aboutUrl varchar(32) NOT NULL, " + "termsUrl varchar(32) NOT NULL, "
-					+ "updated integer NOT NULL, " + "PRIMARY KEY (id))";
+					+ "termsUrl varchar(32) NOT NULL, " + "updated integer NOT NULL, "
+					+ "PRIMARY KEY (id))";
 			Statement createStatement = connection.createStatement();
 			createStatement.executeUpdate(createCategoryTable);
 			createStatement.close();
 			createStatement = connection.createStatement();
-			String createTermTable = "create table term " + "(id varchar(32) NOT NULL, "
-					+ "english varchar(32) NOT NULL, " + "finnish varchar(32) NOT NULL, "
-					+ "englishLink varchar(64) NOT NULL, " + "finnishLink varchar(64) NOT NULL, "
-					+ "definition varchar(1000) NOT NULL, " + "category varchar(32) NOT NULL, "
-					+ "PRIMARY KEY(id,category), "
+			String createTermTable = "create table term " + "(id varchar(32) NOT NULL, " + "english varchar(32) NOT NULL, "
+					+ "finnish varchar(32) NOT NULL, " + "englishLink varchar(64) NOT NULL, "
+					+ "finnishLink varchar(64) NOT NULL, " + "definition varchar(1000) NOT NULL, "
+					+ "category varchar(32) NOT NULL, " + "PRIMARY KEY(id,category), "
 					+ "FOREIGN KEY (category) REFERENCES category (id) ON UPDATE CASCADE ON DELETE CASCADE)";
 			createStatement.executeUpdate(createTermTable);
 			createStatement.close();
@@ -235,4 +243,50 @@ public class LocalDatabase {
 		return false;
 	}
 
+	private void updateDatabaseSchema() {
+		logger.info("Checking if database schema needs updating");
+		if (null != connection) {
+			try (Statement statement = connection.createStatement()) {
+				try (ResultSet rs = statement.executeQuery("PRAGMA user_version;")) {
+					final int schemaVersion = rs.getInt(1);
+					logger.info("PRAGMA user_version: " + schemaVersion);
+					if (schemaVersion < CURRENT_SCHEMA_VERSION) {
+						logger.info("db has older schema, updating!");
+						////////////////////////////////
+						// ADD ANY SCHEMA UPDATES HERE, lastest at the bottom!
+						// Make sure you do this so that all updates are executed
+						// if app has gone forward e.g. 4 database schema changes
+						// but user's database is two steps behind. So in that 
+						// case the latest two schema updates has to be executed.
+						///////////////////////////////
+						if (schemaVersion == 0) {
+							logger.info("Updating from schema " + schemaVersion + " to version " + CURRENT_SCHEMA_VERSION);
+							String addAboutURLStatement = "alter table category add aboutUrl varchar(32) NOT NULL default ''";
+							try (Statement addAboutColumn = connection.createStatement()) {
+								addAboutColumn.execute(addAboutURLStatement);
+							}
+							logger.info("Update successful");
+						}
+						// ADD next schema update here, after the previous one.
+
+						// ========================================================
+						// After all the schema updates have been done, update the
+						// db schema to the app latest version in CURRENT_SCHEMA_VERSION.
+						try(Statement updateSchemaStatement = connection.createStatement()) {
+							logger.info("Updating schema version to db...");
+							String pragmaExecute = "PRAGMA user_version = " + CURRENT_SCHEMA_VERSION;
+							updateSchemaStatement.execute(pragmaExecute);
+							logger.info("...updated schema version to db");
+					  }
+					} else {
+						logger.info("No database update needed.");
+					}
+				}
+			} catch (SQLException e) {
+				logger.error("Error in checking/updating schema: " + e.getLocalizedMessage());
+			}
+		} else {
+			logger.warn("No connection to database while checking for schema updates");
+		}
+	}
 }
