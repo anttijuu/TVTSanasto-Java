@@ -31,7 +31,7 @@ If using Visual Studio Code, for example, install the Java development extension
 
 ![architecture diagram](architecture.png)
 
-You can find a rough class diagram of the app in `structure.png` file.
+You can find a rough class diagram of the app in [structure.png](structure.png) file.
 
 ## Building and running
 

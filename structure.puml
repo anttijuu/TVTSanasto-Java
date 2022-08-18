@@ -17,6 +17,9 @@ package fi.oulu.tol {
 		TermProvider *--> LocalDatabase
 		TermProvider *--> TermProviderObserver: observers
 		TermCategory ..> Term : has
+
+		class TermGraphGenerator
+		TermGraphGenerator ..> TermProvider : uses
 	}
 
 	package fi.oulu.tol.networking {
@@ -50,6 +53,7 @@ package fi.oulu.tol {
 	}
 	class Settings
 	TVTSanasto *--> TermProvider
+	TVTSanasto ..> TermGraphGenerator : runs
 	TVTSanasto --> fi.oulu.tol.view: manages
 	TermProvider ..> Settings
 }
