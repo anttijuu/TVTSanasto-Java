@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -19,6 +20,7 @@ public class SearchPanel extends JPanel {
 	public SearchPanel(TermProvider provider) {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		JLabel label = new JLabel("Etsi: ");
 		JTextField searchField = new JTextField();
 		searchField.addActionListener(new ActionListener() {
 			@Override
@@ -26,7 +28,7 @@ public class SearchPanel extends JPanel {
 				provider.setSearchFilter(searchField.getText().trim().toLowerCase());
 			}
 		});
-		searchField.setToolTipText("Etsi termejä");
+		searchField.setToolTipText("Kirjoita hakusana ja paina enter.");
 		searchField.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH - 100, 16));
 		JButton clearButton = new JButton("Tyhjennä");
 		clearButton.addActionListener(new ActionListener() {
@@ -37,6 +39,7 @@ public class SearchPanel extends JPanel {
 			}
 		});
 		clearButton.setEnabled(false);
+		add(label);
 		add(searchField);
 		add(clearButton);
 		DocumentListener dl = new DocumentListener() {

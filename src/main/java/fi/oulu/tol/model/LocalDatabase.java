@@ -60,6 +60,7 @@ public class LocalDatabase {
 			String nameEn = rs.getString("nameEn");
 			String nameFi = rs.getString("nameFi");
 			String nameSe = rs.getString("nameSe");
+			String aboutUrl = rs.getString("aboutUrl");
 			String termsUrl = rs.getString("termsUrl");
 			long updated = rs.getLong("updated");
 			TermCategory category = new TermCategory();
@@ -67,6 +68,7 @@ public class LocalDatabase {
 			category.nameEn = nameEn;
 			category.nameFi = nameFi;
 			category.nameSe = nameSe;
+			category.aboutURL = aboutUrl;
 			category.termsURL = termsUrl;
 			category.updated = LocalDateTime.ofInstant(Instant.ofEpochMilli(updated), ZoneOffset.UTC);
 			categories.add(category);
@@ -88,6 +90,7 @@ public class LocalDatabase {
 			String nameEn = rs.getString("nameEn");
 			String nameFi = rs.getString("nameFi");
 			String nameSe = rs.getString("nameSe");
+			String aboutUrl = rs.getString("aboutUrl");
 			String termsUrl = rs.getString("termsUrl");
 			long updated = rs.getLong("updated");
 			category = new TermCategory();
@@ -95,6 +98,7 @@ public class LocalDatabase {
 			category.nameEn = nameEn;
 			category.nameFi = nameFi;
 			category.nameSe = nameSe;
+			category.aboutURL = aboutUrl;
 			category.termsURL = termsUrl;
 			category.updated = LocalDateTime.ofInstant(Instant.ofEpochMilli(updated), ZoneOffset.UTC);
 		}
@@ -104,9 +108,10 @@ public class LocalDatabase {
 
 	public void saveCategories(List<TermCategory> categories) throws SQLException {
 		logger.debug("Saving categories to db");
-		String insertMsgStatement = "insert into category (id, nameEn, nameFi, nameSe, termsUrl, updated)"
-				+ " values(?, ?, ?, ?, ?, ?) on conflict (id) do update" + " set nameEn = excluded.nameEn,"
-				+ " nameFi = excluded.nameFi," + " nameSe = excluded.nameSe," + " termsUrl = excluded.termsUrl";
+		String insertMsgStatement = "insert into category (id, nameEn, nameFi, nameSe, aboutUrl, termsUrl, updated)"
+				+ " values(?, ?, ?, ?, ?, ?, ?) on conflict (id) do update" + " set nameEn = excluded.nameEn,"
+				+ " nameFi = excluded.nameFi," + " nameSe = excluded.nameSe,"
+				+ " aboutUrl = excluded.aboutUrl" + " + termsUrl = excluded.termsUrl";
 		PreparedStatement createStatement;
 		createStatement = connection.prepareStatement(insertMsgStatement);
 		for (TermCategory category : categories) {
@@ -114,9 +119,10 @@ public class LocalDatabase {
 			createStatement.setString(2, category.nameEn);
 			createStatement.setString(3, category.nameFi);
 			createStatement.setString(4, category.nameSe);
-			createStatement.setString(5, category.termsURL);
+			createStatement.setString(5, category.aboutURL);
+			createStatement.setString(6, category.termsURL);
 			var timeStamp = category.updated.toInstant(ZoneOffset.UTC).toEpochMilli();
-			createStatement.setLong(6, timeStamp);
+			createStatement.setLong(7, timeStamp);
 			createStatement.executeUpdate();
 		}
 		createStatement.close();
@@ -209,7 +215,8 @@ public class LocalDatabase {
 		if (null != connection) {
 			String createCategoryTable = "create table category " + "(id varchar(32) NOT NULL, "
 					+ "nameEn varchar(32) NOT NULL, " + "nameFi varchar(32) NOT NULL, " + "nameSe varchar(32) NOT NULL, "
-					+ "termsUrl varchar(32) NOT NULL, " + "updated integer NOT NULL, " + "PRIMARY KEY (id))";
+					+ "aboutUrl varchar(32) NOT NULL, " + "termsUrl varchar(32) NOT NULL, "
+					+ "updated integer NOT NULL, " + "PRIMARY KEY (id))";
 			Statement createStatement = connection.createStatement();
 			createStatement.executeUpdate(createCategoryTable);
 			createStatement.close();

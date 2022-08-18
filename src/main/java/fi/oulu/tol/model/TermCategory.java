@@ -14,6 +14,7 @@ public class TermCategory implements Comparable<TermCategory> {
 	String nameEn;
 	String nameFi;
 	String nameSe; // unused
+	String aboutURL;
 	String termsURL;
 	LocalDateTime updated;
 
@@ -23,6 +24,7 @@ public class TermCategory implements Comparable<TermCategory> {
 		termCategory.nameEn = jsonObject.getString("nameEn");
 		termCategory.nameFi = jsonObject.getString("nameFi");
 		termCategory.nameSe = jsonObject.getString("nameSe");
+		termCategory.aboutURL = jsonObject.getString("aboutURL");
 		termCategory.termsURL = jsonObject.getString("termsURL");
 		Date weekAgo = new Date(System.currentTimeMillis() - 3600 * 24 * 7 * 1000);
 		termCategory.updated = weekAgo.toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();

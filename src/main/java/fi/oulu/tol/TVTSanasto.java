@@ -42,9 +42,21 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	private TermProvider provider;
 	private static final Logger logger = LogManager.getLogger(TVTSanasto.class);
 
+	private static final String aboutText = "Tietotekniikan termejä oppijoille 1.0\n" +
+														"Lisätietoja sovelluksesta ja sanastoista: " + 
+														"https://github.com/anttijuu/TVTSanasto-Java" + 
+														"\n\nAvoimen lähdekoodin lisenssit:\n" + 
+														"com.github.rjeschke txtmark Copyright (C) 2011-2015 René Jeschke Apache License Version 2.0\n" + 
+														"org.xerial JDBC SQLite driver Copyright (C) Taro L. Saito Apache License Version 2.0\n" +
+														"Ulkoinen binäärityökalu (lähdekoodia ei käytetä): GraphViz: Common Public License Version 1.0";
+
 	public static void main(String[] args) {
 		logger.info("Launching TVTSanasto");
 		try {
+			if (args.length > 0 && (args[0].equalsIgnoreCase("-v") || args[0].equalsIgnoreCase("--version"))) {
+				System.out.println(aboutText);
+				return;
+			}
 			new TVTSanasto().run();
 		} catch (SQLException e) {
 			logger.error("SQLException in app, exiting");
@@ -139,12 +151,6 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
-			final String aboutText = "Tietotekniikan termejä oppijoille.\n" +
-											 "Lisätietoja sovelluksesta ja sanastoista: " + 
-											 "https://gitlab.com/sanasto/sanasto-swing/" + 
-											 "\n\nAvoimen lähdekoodin lisenssit:\n" + 
-											 "com.github.rjeschke txtmark Copyright (C) 2011-2015 René Jeschke Apache License Version 2.0\n" + 
-											 "org.xerial JDBC SQLite driver Copyright (C) Taro L. Saito Apache License Version 2.0\n";
 			JOptionPane.showMessageDialog(frame, aboutText, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);

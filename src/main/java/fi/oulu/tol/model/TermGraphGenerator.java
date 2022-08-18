@@ -146,6 +146,8 @@ public class TermGraphGenerator {
 		for (char c : id.toCharArray()) {
 			if (Arrays.binarySearch(chars, c) >= 0) {
 				builder.append(c);
+			} else {
+				builder.append('_');
 			}
 		}
 		final String words[] = { "strict", "graph", "digraph", "node", "edge", "subgraph" };
