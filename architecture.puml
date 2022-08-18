@@ -4,6 +4,7 @@ node UserPC {
 	component SQLite
 	component org.json
 	component rjeschke.txtmark
+	component graphviz
 	file settings.properties
 	database tvtsanasto.sqlite
 	TVTSanasto --> SQLite: org.xerial JDBC driver
@@ -11,6 +12,7 @@ node UserPC {
 	TVTSanasto --> org.json: parsing JSON
 	TVTSanasto --> rjeschke.txtmark: markdown to html
 	TVTSanasto --> settings.properties: app settings
+	TVTSanasto ..> graphviz : generates graph
 }
 cloud server {
 	file index.json
@@ -22,5 +24,5 @@ cloud server {
 actor User
 
 User -> TVTSanasto
-TVTSanasto ..> server: https
+TVTSanasto ..> server: HTTPS GET
 @enduml
