@@ -14,7 +14,7 @@ User may also sort the terms by language and search the terms. App then lists on
 
 ## Dependencies
 
-The app uses the following Java version 18 features and components:
+For building and running the app you need the following Java version 18 features and components:
 
 * Java SE JDK version 18 or newer from https://openjdk.org/install/ 
 * Maven for project configuration from https://maven.apache.org/install.html 
@@ -45,6 +45,12 @@ and then run it:
 ```console
 java -jar target/sanasto-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
+You have to have the following installed on the machine running the app (from the jar, without development environment):
+
+1. SQLite runtime https://www.sqlite.org
+2. JVM 18.0.1 or newer.
+3. *Optionally* if you wish to use the feature that generates a graph image showing dependencies between the terms, you need to also install https://graphviz.org/ so that it can be executed from the command line. The app works without it, but the feature that generates the graph does not.
 
 Obviously you can also run the app from your IDE.
 
