@@ -89,6 +89,7 @@ public class TermGraphGenerator {
 		// TODO: Check if need to add "cmd" as the first command.
 		String command[] = { "dot", "graph.dot", "-Tpng", "-ograph.png" };
 		try {
+			logger.debug("Executing command " + Arrays.toString(command));
 			Process process = Runtime.getRuntime().exec(command);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -111,11 +112,30 @@ public class TermGraphGenerator {
 		}
 	}
 
+	private enum OS {
+		WINDOWS,
+		UNIX
+	}
+
+	private OS getOS() {
+		String os = System.getProperty("os.name");
+		if (os.contains("Windows")) {
+			return OS.WINDOWS;
+		} else {
+			return OS.UNIX;
+		}
+	}
 	private void openImage() throws GraphGeneratorException {
 		// TODO: Check if need to add "cmd" as the first command.
 		logger.debug("Opening the generated image.");
-		String command[] = { "open", "graph.png" };
+		String [] command;
+		if (getOS() == OS.WINDOWS) {
+			command = new String [] { "cmd", "/c", "graph.png" };
+		} else {
+			command = new String [] { "open", "graph.png" };
+		}
 		try {
+			logger.debug("Executing command " + Arrays.toString(command));
 			Process process = Runtime.getRuntime().exec(command);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -138,6 +158,8 @@ public class TermGraphGenerator {
 		}
 
 	}
+
+	
 
 	private String cleanIdForGraphViz(final String id) {
 		final String allowed = "abcdefghijklmnopqrstuvwxyz_";
