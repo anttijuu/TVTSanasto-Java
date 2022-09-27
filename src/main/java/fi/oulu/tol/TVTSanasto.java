@@ -182,7 +182,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
-	} else if (e.getActionCommand().equals("cmd-refresh-category")) {
+		} else if (e.getActionCommand().equals("cmd-refresh-category")) {
 			try {
 				int oldTermCount = provider.getSelectedCategoryTerms().size();
 				List<Term> terms = provider.fetchTerms(provider.getSelectedCategory());
