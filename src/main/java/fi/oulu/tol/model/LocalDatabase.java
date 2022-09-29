@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -164,13 +165,14 @@ public class LocalDatabase {
 		return terms;
 	}
 
-	public List<Term> readTerms(String forCategoryId) throws SQLException {
+	public List<Term> readTerms(String forCategoryId, Language inOrder) throws SQLException {
 		logger.debug("Reading terms for a category from db: " + forCategoryId);
 		List<Term> terms = new ArrayList<>();
-		String query = "select * from term where category = ?";
+		String query = "select * from term where category = ? order by ?";
 		Term term = null;
 		PreparedStatement queryStatement = connection.prepareStatement(query);
 		queryStatement.setString(1, forCategoryId);
+		queryStatement.setString(2, inOrder == Language.FINNISH ? "finnish asc" : "english asc");
 		ResultSet rs = queryStatement.executeQuery();
 		while (rs.next()) {
 			String id = rs.getString("id");

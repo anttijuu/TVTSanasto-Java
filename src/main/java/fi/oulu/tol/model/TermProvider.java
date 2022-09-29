@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,14 +93,15 @@ public class TermProvider {
 		}
 		List<Term> terms = categoriesAndTerms.get(selectedCategory);
 		if (terms != null) {
-			terms = database.readTerms(selectedCategory.id);
+			terms = database.readTerms(selectedCategory.id, sortOrder);
 			if (terms.isEmpty()) {
 				logger.debug("No terms in db for category, fetching " + selectedCategory.id);
 				terms = fetchTerms(selectedCategory);
 			}
 			if (!terms.isEmpty()) {
 				logger.debug("Db or server gave non-empty list of terms, taking into use");
-				categoriesAndTerms.put(selectedCategory, terms.stream().sorted(comparator()).toList());
+				terms = terms.stream().sorted(comparator()).toList();
+				categoriesAndTerms.put(selectedCategory, terms);
 			}
 		} else {
 			logger.debug("No terms for this (nonexistent?) category, returning empty list of terms");
@@ -217,7 +219,6 @@ public class TermProvider {
 	}
 
 	private void notifyObservers(TermProviderObserver.Topic topic) {
-		logger.debug("Notifying observers of topic " + topic);
 		for (TermProviderObserver observer: observers) {
 			observer.changeEvent(topic);
 		}
