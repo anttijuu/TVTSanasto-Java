@@ -3,7 +3,6 @@ package fi.oulu.tol.view;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.ListModel;
