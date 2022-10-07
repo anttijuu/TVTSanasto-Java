@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import fi.oulu.tol.Settings;
@@ -38,9 +39,9 @@ public class Downloader {
 		List<TermCategory> results = new ArrayList<>();
 		int responseCode = connection.getResponseCode();
 		logger.info("HTTPS response code: " + responseCode);
-		if (responseCode == 204) {
+		if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
 			return results;
-		} else if (responseCode >= 200 && responseCode < 300) {
+		} else if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < 300) {
 			String input;
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
@@ -72,9 +73,9 @@ public class Downloader {
 		HttpsURLConnection connection = setupConnection(forCategoryURL);
 		int responseCode = connection.getResponseCode();
 		logger.info("HTTPS response code: " + responseCode);
-		if (responseCode == 204) {
+		if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
 			return terms;
-		} else if (responseCode >= 200 && responseCode < 300) {
+		} else if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < 300) {
 			String input;
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));

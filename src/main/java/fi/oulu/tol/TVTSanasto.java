@@ -42,7 +42,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	private TermProvider provider;
 	private static final Logger logger = LogManager.getLogger(TVTSanasto.class);
 
-	private static final String aboutText = "Tietotekniikan termejä oppijoille 1.0\n" +
+	private static final String ABOUT_TEXT = "Tietotekniikan termejä oppijoille 1.0\n" +
 														"Lisätietoja sovelluksesta ja sanastoista: " + 
 														"https://github.com/anttijuu/TVTSanasto-Java" + 
 														"\n\nAvoimen lähdekoodin lisenssit:\n" + 
@@ -54,7 +54,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		logger.info("Launching TVTSanasto");
 		try {
 			if (args.length > 0 && (args[0].equalsIgnoreCase("-v") || args[0].equalsIgnoreCase("--version"))) {
-				System.out.println(aboutText);
+				System.out.println(ABOUT_TEXT);
 				return;
 			}
 			new TVTSanasto().run();
@@ -151,7 +151,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
-			JOptionPane.showMessageDialog(frame, aboutText, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(frame, ABOUT_TEXT, "TVT Sanasto", JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			provider.setSortOrder(Language.FINNISH);
 			Settings.language = Language.FINNISH;
@@ -202,10 +202,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			String graphVizError = "";
 			try {
 				new TermGraphGenerator(provider).buildGraph();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				error = e1.getMessage();
-			} catch (SQLException e1) {
+			} catch (SQLException | IOException e1) {
 				e1.printStackTrace();
 				error = e1.getMessage();
 			} catch (GraphGeneratorException e1) {

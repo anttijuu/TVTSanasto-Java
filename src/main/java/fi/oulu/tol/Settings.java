@@ -18,9 +18,9 @@ public class Settings {
 		// Empty
 	}
 
-	public static int WINDOW_WIDTH = 1200;
-	public static int WINDOW_HEIGHT = 800;
-	public static int LIST_WIDTH = 250;
+	public static final int WINDOW_WIDTH = 1200;
+	public static final int WINDOW_HEIGHT = 800;
+	public static final int LIST_WIDTH = 250;
 	public static Language language = Language.FINNISH;
 	public static LocalDateTime lastIndexFetchDateTime = null;
 	private static final String DEFAULT_JSON_INDEX_URL = "https://gitlab.com/sanasto/index/-/raw/main/index.json";

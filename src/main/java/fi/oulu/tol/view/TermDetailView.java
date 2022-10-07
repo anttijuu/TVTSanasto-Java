@@ -18,6 +18,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import com.github.rjeschke.txtmark.Processor;
 
@@ -40,7 +41,7 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 	private JButton labelURLFinnish;
 	private JButton labelURLEnglish;
 
-	private URLActionListener urlActionListener = new URLActionListener();
+	private transient URLActionListener urlActionListener = new URLActionListener();
 
 	public TermDetailView(TermProvider provider) {
 		this.provider = provider;
@@ -61,10 +62,10 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		Icon flagFi = new ImageIcon(ClassLoader.getSystemResource("images/fi.png"));
 		Icon flagEn = new ImageIcon(ClassLoader.getSystemResource("images/en.png"));
 		
-		labelEnglish = new JLabel(flagEn, JLabel.LEADING);
+		labelEnglish = new JLabel(flagEn, SwingConstants.LEADING);
 		labelEnglish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelEnglish);
-		labelFinnish = new JLabel(flagFi, JLabel.LEADING);
+		labelFinnish = new JLabel(flagFi, SwingConstants.LEADING);
 		labelFinnish.setAlignmentX(LEFT_ALIGNMENT);
 		add(labelFinnish);
 		add(Box.createRigidArea(new Dimension(0, 10)));
