@@ -27,6 +27,9 @@ graph.png
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+# macOS utility files
+.DS_Store
+
 # app specific files
 settings.properties
 tvtsanasto.sqlite
