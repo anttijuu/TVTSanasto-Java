@@ -1,6 +1,7 @@
 package fi.oulu.tol.view;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 	private List<Term> terms;
 	private ArrayList<ListDataListener> listeners = new ArrayList<>();
 
-	public TermListModel(TermProvider provider) throws JSONException, SQLException, IOException {
+	public TermListModel(TermProvider provider) throws JSONException, SQLException, IOException, URISyntaxException {
 		this.provider = provider;
 		provider.addObserver(this);
 		this.terms = provider.getSelectedCategoryTerms();
@@ -61,7 +62,7 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 				for (ListDataListener listener : listeners) {
 					listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, terms.size()));
 				}
-			} catch (JSONException | SQLException | IOException e) {
+			} catch (JSONException | SQLException | IOException | URISyntaxException e) {
 				e.printStackTrace();
 			}
 		} else if (topic == Topic.CATEGORY_CHANGED) {
@@ -70,7 +71,7 @@ public class TermListModel implements ListModel<Term>, TermProviderObserver {
 				for (ListDataListener listener : listeners) {
 					listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, terms.size()));
 				}
-			} catch (JSONException | SQLException | IOException e) {
+			} catch (JSONException | SQLException | IOException | URISyntaxException e) {
 				e.printStackTrace();
 			}
 		}

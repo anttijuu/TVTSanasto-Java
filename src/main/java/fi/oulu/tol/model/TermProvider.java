@@ -1,6 +1,7 @@
 package fi.oulu.tol.model;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class TermProvider {
 
 	private static final Logger logger = LogManager.getLogger(TermProvider.class);
 	
-	public TermProvider() throws SQLException, IOException {
+	public TermProvider() throws SQLException, IOException, URISyntaxException {
 		logger.info("Initializing TermProvider.");
 		database.open("tvtsanasto.sqlite");
 		logger.info("Reading categories from local database.");
@@ -60,7 +61,7 @@ public class TermProvider {
 		logger.info("Closed the TermProvider");
 	}
 
-	public int fetchIndex() throws SQLException, IOException {
+	public int fetchIndex() throws SQLException, IOException, URISyntaxException {
 		LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
 		// If no categories locally, do always fetch. Otherwise check if fetching too frequently.
 		if (!categoriesAndTerms.isEmpty()) {
@@ -85,7 +86,7 @@ public class TermProvider {
 		return categoriesAndTerms.keySet().stream().toList();
 	}
 
-	public List<Term> getSelectedCategoryTerms() throws SQLException, JSONException, IOException {
+	public List<Term> getSelectedCategoryTerms() throws SQLException, JSONException, IOException, URISyntaxException {
 		if (selectedCategory == null) {
 			logger.debug("No selected category, returning empty list of terms");
 			return new ArrayList<>();
@@ -120,7 +121,7 @@ public class TermProvider {
 		return (p1, p2) -> { return p1.english.toLowerCase().compareTo(p2.english.toLowerCase()); };
 	}
 
-	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException {
+	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException, URISyntaxException {
 		if (null == category) {
 			return new ArrayList<>();
 		}

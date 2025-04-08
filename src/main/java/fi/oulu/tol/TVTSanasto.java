@@ -20,8 +20,10 @@ import javax.swing.WindowConstants;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,7 +44,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	private TermProvider provider;
 	private static final Logger logger = LogManager.getLogger(TVTSanasto.class);
 
-	private static final String ABOUT_TEXT = "Tietotekniikan termejä oppijoille 1.0\n" +
+	private static final String ABOUT_TEXT = "Tietotekniikan termejä oppijoille 1.1\n" +
 														"Lisätietoja sovelluksesta ja sanastoista: " + 
 														"https://github.com/anttijuu/TVTSanasto-Java" + 
 														"\n\nAvoimen lähdekoodin lisenssit:\n" + 
@@ -64,10 +66,13 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		} catch (IOException e) {
 			logger.error("IOException in app, exiting");
 			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			logger.error("URISyntaxException in app, exiting");
+			e.printStackTrace();
 		}
 	}
 
-	private void run() throws SQLException, IOException {
+	private void run() throws SQLException, IOException, URISyntaxException {
 		logger.debug("Reading settings");
 		Settings.readSettings();
 		logger.info("Index last fetched: " + Settings.lastIndexFetchDateTime.toString());
@@ -181,6 +186,10 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				String message = String.format("Virhe luettaessa kategorioita: %s\n", e1.getLocalizedMessage());
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
+			} catch (URISyntaxException e1) {
+				String message = String.format("Virhe sanaston osoitteessa: %s%n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-refresh-category")) {
 			try {
@@ -196,6 +205,14 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				String message = String.format("Virhe haettaessa termejä: %s\n", e1.getLocalizedMessage());
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
+			} catch (JSONException e1) {
+				String message = String.format("Virhe sanastossa: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			} catch (URISyntaxException e1) {
+				String message = String.format("Virhe sanaston osoitteessa: %s\n", e1.getLocalizedMessage());
+				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-create-graph")) {
 			String error = null;
@@ -209,6 +226,12 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				e1.printStackTrace();
 				error = e1.getMessage();
 				graphVizError = "Onko GraphViz asennettu ja käytettävissä komentoriviltä?";
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+				error = e1.getMessage();
+			} catch (URISyntaxException e1) {
+				e1.printStackTrace();
+				error = e1.getMessage();
 			}
 			if (null != error) {
 				String message = String.format("Termiverkkoa ei saatu luotua.\n%s\nVirhe: %s", graphVizError, error);

@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 public class TermGraphGenerator {
 
@@ -31,7 +33,7 @@ public class TermGraphGenerator {
 		this.provider = provider;
 	}
 
-	public void buildGraph() throws IOException, SQLException, GraphGeneratorException {
+	public void buildGraph() throws IOException, SQLException, GraphGeneratorException, JSONException, URISyntaxException {
 		logger.info("Starting to build a GraphViz graph");
 		writeHeader();
 		writeTerms();
@@ -50,7 +52,7 @@ public class TermGraphGenerator {
 		writer.write("\tnode [shape=ellipse style=filled fillcolor=white]\n");
 	}
 
-	private void writeTerms() throws IOException, SQLException {
+	private void writeTerms() throws IOException, SQLException, JSONException, URISyntaxException {
 		logger.debug("Writing the terms to .dot file");
 		List<Term> allTerms = provider.getSelectedCategoryTerms();
 		for (final Term term : allTerms) {

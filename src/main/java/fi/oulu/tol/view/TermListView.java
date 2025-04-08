@@ -2,6 +2,7 @@ package fi.oulu.tol.view;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.awt.BorderLayout;
 
@@ -28,7 +29,7 @@ public class TermListView extends JPanel implements ListSelectionListener, ListD
 	private JList<Term> list;
 	private transient TermProvider provider;
 
-	public TermListView(TermProvider provider) throws JSONException, SQLException, IOException {
+	public TermListView(TermProvider provider) throws JSONException, SQLException, IOException, URISyntaxException {
 		super(new BorderLayout());
 		this.provider = provider;
 		terms = new TermListModel(provider);

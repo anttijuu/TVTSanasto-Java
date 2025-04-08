@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import fi.oulu.tol.Settings;
@@ -33,7 +35,7 @@ public class Downloader {
 
 	private static final Logger logger = LogManager.getLogger(Downloader.class);
 
-	public synchronized List<TermCategory> getIndex() throws IOException {
+	public synchronized List<TermCategory> getIndex() throws IOException, URISyntaxException {
 		logger.info("Starting to fetch term indices from " + Settings.mainIndexJSONFileURL);
 		HttpsURLConnection connection = setupConnection(Settings.mainIndexJSONFileURL);
 		List<TermCategory> results = new ArrayList<>();
@@ -67,7 +69,7 @@ public class Downloader {
 		return results;
 	}
 
-	public synchronized List<Term> getTerms(String forCategoryURL) throws IOException, JSONException {
+	public synchronized List<Term> getTerms(String forCategoryURL) throws IOException, JSONException, URISyntaxException {
 		List<Term> terms = new ArrayList<>();
 		logger.info("Starting to fetch terms from " + forCategoryURL);
 		HttpsURLConnection connection = setupConnection(forCategoryURL);
@@ -101,8 +103,8 @@ public class Downloader {
 		return terms;
 	}
 
-	private HttpsURLConnection setupConnection(String forURL) throws IOException {
-		URL url = new URL(forURL);
+	private HttpsURLConnection setupConnection(String forURL) throws IOException, URISyntaxException {
+		URL url = new URI(forURL).toURL();
 		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 		connection.setUseCaches(false);
 		connection.setDefaultUseCaches(false);

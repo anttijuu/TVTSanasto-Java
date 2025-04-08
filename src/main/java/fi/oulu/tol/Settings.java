@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -43,7 +45,7 @@ public class Settings {
 			}
 			String indexUrl = config.getProperty("indexURL", DEFAULT_JSON_INDEX_URL);
 			// Not a good way to validate URLs but catches at least something.
-			URL url = new URL(indexUrl);
+			URL url = new URI(indexUrl).toURL();
 			mainIndexJSONFileURL = indexUrl;
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed index URL in settings, aborting");
@@ -53,6 +55,10 @@ public class Settings {
 			language = Language.FINNISH;
 			lastIndexFetchDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(557442000000L), ZoneOffset.UTC);
 			mainIndexJSONFileURL = DEFAULT_JSON_INDEX_URL;
+		} catch (URISyntaxException e) {
+			System.out.println("Malformed index URL in settings, aborting");
+			e.printStackTrace();
+			System.exit(42);
 		}
 	}
 
