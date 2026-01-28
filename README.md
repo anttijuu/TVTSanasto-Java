@@ -49,7 +49,7 @@ java -jar target/sanasto-1.1-SNAPSHOT-jar-with-dependencies.jar
 You have to have the following installed on the machine running the app using the jar, without development environment:
 
 1. SQLite runtime https://www.sqlite.org
-2. JVM 18.0.1 or newer.
+2. JVM/JDK 20 or newer.
 3. *Optionally* if you wish to use the feature that generates a graph image showing dependencies between the terms, you need to also install https://graphviz.org/ so that it can be executed from the command line. The app works without it, but the feature that generates the graph does not.
 
 Obviously you can also run the app from your IDE.
