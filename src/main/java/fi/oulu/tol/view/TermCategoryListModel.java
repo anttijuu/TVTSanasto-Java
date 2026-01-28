@@ -50,7 +50,7 @@ public class TermCategoryListModel implements ListModel<TermCategory>, TermProvi
 			for (ListDataListener listener : listeners) {
 				listener.intervalAdded(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, categories.size() - 1));
 			}
-		} else if (topic == Topic.CATEGORY_CHANGED) {
+		} else if (topic == Topic.CATEGORY_CHANGED || topic == Topic.LANGUAGE_CHANGED) {
 			categories = provider.getCategories();
 			for (ListDataListener listener : listeners) {
 				listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, categories.size() - 1));

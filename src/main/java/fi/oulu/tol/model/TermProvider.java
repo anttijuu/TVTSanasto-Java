@@ -194,7 +194,7 @@ public class TermProvider {
 				List<Term> terms = entry.getValue();
 				categoriesAndTerms.put(category, terms.stream().sorted(comparator()).toList());
 		  	}
-			notifyObservers(Topic.CATEGORY_CHANGED);
+			notifyObservers(Topic.LANGUAGE_CHANGED);
 		}
 	}
 

@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import java.util.ResourceBundle;
+
 import com.github.rjeschke.txtmark.Processor;
 
 import fi.oulu.tol.Settings;
@@ -85,9 +87,7 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		labelURLFinnish.setAlignmentX(LEFT_ALIGNMENT);
 		labelURLFinnish.addActionListener(urlActionListener);
 		add(labelURLFinnish);
-		if (term != null) {
-			updateContents();
-		}
+		updateContents();
 	}
 
 	private class URLActionListener implements ActionListener {
@@ -124,12 +124,16 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		} else if (topic == Topic.SELECTED_TERM_CHANGED) {
 			term = provider.getSelectedTerm();
 			updateContents();
+		} else if (topic == Topic.LANGUAGE_CHANGED) {
+			updateContents();
 		}
 	}
 
 	private void updateContents() {
+		ResourceBundle messages = ResourceBundle.getBundle("TermDetailViewBundle", Settings.currentLocale());
+		labelLinks.setText(messages.getString("sources_lbl"));
 		if (null == category || null == term) {
-			labelCategory.setText("Valitse kategoria ja termi listalta");
+			labelCategory.setText(messages.getString("unselected_term_hint"));
 			labelEnglish.setText("");
 			labelFinnish.setText("");
 			labelDefinition.setText("");

@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Properties;
+import java.util.Locale;
 
 import fi.oulu.tol.model.Language;
 
@@ -29,6 +30,16 @@ public class Settings {
 	public static String mainIndexJSONFileURL = null;
 
 	private static final String CONFIGURATION_FILE_NAME = "settings.properties";
+
+	public static Locale currentLocale() {
+		switch (language) {
+			case FINNISH:
+				return Locale.forLanguageTag("fi");
+			case ENGLISH:
+			default:
+				return Locale.ENGLISH;
+		}
+	}
 
 	public static void readSettings() {
 		File configFile = new File(CONFIGURATION_FILE_NAME);
