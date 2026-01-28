@@ -14,9 +14,9 @@ User may also sort the terms by language and search the terms. App then lists on
 
 ## Dependencies
 
-For building and running the app you need the following Java version 18 features and components:
+For building and running the app you need the following Java version 20 features and components:
 
-* Java SE JDK version 18 or newer from https://openjdk.org/install/ 
+* Java SE JDK version 20 or newer from https://openjdk.org/install/ 
 * Maven for project configuration from https://maven.apache.org/install.html 
 * SQLite runtime. If not already installed, get it from https://www.sqlite.org,
 * AWT and Swing for the user interface (included in the Java JDK),
@@ -43,10 +43,10 @@ mvn package
 and then run it:
 
 ```console
-java -jar target/sanasto-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar target/sanasto-1.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
-You have to have the following installed on the machine running the app (from the jar, without development environment):
+You have to have the following installed on the machine running the app using the jar, without development environment:
 
 1. SQLite runtime https://www.sqlite.org
 2. JVM 18.0.1 or newer.
@@ -54,7 +54,7 @@ You have to have the following installed on the machine running the app (from th
 
 Obviously you can also run the app from your IDE.
 
-The first time the app is executed, it will download the index and term JSON files and saves the categories and terms in the local database it creates. This may take some seconds, depending on the speed of your PC. Later, the app launches much quicker since it only needs to read the categories and terms from the local database.
+The first time the app is executed, it will download the index and term JSON files and saves the categories and terms in the local database it creates. This may take some seconds, depending on the speed of your PC and network. Later, the app launches much quicker since it only needs to read the categories and terms from the local database.
 
 ## Terms and categories
 
@@ -64,7 +64,7 @@ If you wish to support other languages than Finnish/English, feel free to fork t
 
 ## License
 
-MIT License, (c) Antti Juustila, 2022.
+MIT License, (c) Antti Juustila, 2022-2026.
 
 See the `LICENSE` file included.
 
