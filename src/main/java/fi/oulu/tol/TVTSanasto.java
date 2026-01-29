@@ -34,6 +34,7 @@ import java.text.Format;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import fi.oulu.tol.model.TermGraphGenerator;
@@ -65,7 +66,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		logger.info("Launching TVTSanasto");
 		try {
 			if (args.length > 0 && (args[0].equalsIgnoreCase("-v") || args[0].equalsIgnoreCase("--version"))) {
-				System.out.println(ABOUT_TEXT);
+				System.out.println("ICT Vocabularies for learners v 1.1");
 				return;
 			}
 			new TVTSanasto().run();
@@ -196,7 +197,8 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("cmd-about")) {
-			JOptionPane.showMessageDialog(frame, ABOUT_TEXT, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
+			final String aboutText = messages.getString("about");
+			JOptionPane.showMessageDialog(frame, aboutText, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
 			Settings.language = Language.FINNISH;
 			Settings.saveSettings();
@@ -210,7 +212,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		} else if (e.getActionCommand().equals("cmd-refresh-index")) {
 			try {
 				int newCategories = provider.fetchIndex();
-				final String infoString = this.getFetchCategoryInfoMessage(newCategories, messages.getString("category"));
+				final String infoString = this.getFetchCategoryInfoMessage(newCategories, messages.getString("categories"));
 				JOptionPane.showMessageDialog(frame, infoString, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 			} catch (UnknownHostException e1) {
 				String message = String.format("Palvelinta ei löydy: %s\n", e1.getLocalizedMessage());
@@ -233,7 +235,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			try {
 				int oldTermCount = provider.getSelectedCategoryTerms().size();
 				List<Term> terms = provider.fetchTerms(provider.getSelectedCategory());
-				final String infoString = this.getFetchCategoryInfoMessage(terms.size()-oldTermCount, messages.getString("term"));
+				final String infoString = this.getFetchCategoryInfoMessage(terms.size()-oldTermCount, messages.getString("terms"));
 				JOptionPane.showMessageDialog(frame, infoString, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 			} catch (SQLException | IOException e1) {
 				String message = String.format("Virhe haettaessa termejä: %s\n", e1.getLocalizedMessage());
@@ -279,21 +281,20 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	}
 
 	private String getFetchCategoryInfoMessage(int countOfNewCategories, final String termOrCategory) {
-		MessageFormat messageForm = new MessageFormat("fetch_pattern");
-		messageForm.setLocale(Settings.currentLocale());
-		double[] termCountLimits = {0,1,2};
-		String [] termStrings = {
+		MessageFormat messageFormat = new MessageFormat("fetch_pattern", Settings.currentLocale());
+		String pattern = messages.getString("fetch_pattern");
+		messageFormat.applyPattern(pattern);
+		double[] countLimits = {-1,1,2};
+		String [] strings = {
 			messages.getString("no_new_items"),
 			messages.getString("one_new_item"),
 			messages.getString("many_new_items")
 		};
-		ChoiceFormat choiceForm = new ChoiceFormat(termCountLimits, termStrings);
-		String pattern = messages.getString("fetch_pattern");
-		messageForm.applyPattern(pattern);
-		Format[] formats = {choiceForm, null, NumberFormat.getInstance()};
-		messageForm.setFormats(formats);
-		Object[] messageArguments = {countOfNewCategories, termOrCategory};
-		final String result = messageForm.format(messageArguments);
+		ChoiceFormat choiceForm = new ChoiceFormat(countLimits, strings);
+		Format[] formats = {choiceForm}; //, null, NumberFormat.getInstance()};
+		messageFormat.setFormats(formats);
+		Object[] messageArguments = { countOfNewCategories, termOrCategory.toLowerCase(Settings.currentLocale()) };
+		final String result = messageFormat.format(messageArguments);
 		return result;
 	}
 
