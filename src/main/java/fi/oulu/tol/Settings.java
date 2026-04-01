@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,12 +25,22 @@ public class Settings {
 	public static final int WINDOW_WIDTH = 1200;
 	public static final int WINDOW_HEIGHT = 800;
 	public static final int LIST_WIDTH = 250;
-	public static Language language = Language.FINNISH;
+	private static Language language = Language.FINNISH;
+	private static Collator collator = null;
 	public static LocalDateTime lastIndexFetchDateTime = null;
 	private static final String DEFAULT_JSON_INDEX_URL = "https://gitlab.com/sanasto/index/-/raw/main/index.json";
 	public static String mainIndexJSONFileURL = null;
 
 	private static final String CONFIGURATION_FILE_NAME = "settings.properties";
+
+	public static Language getLanguage() {
+		return language;
+	}
+
+	public static void setLanguage(Language language) {
+		Settings.language = language;
+		collator = Collator.getInstance(currentLocale());
+	}
 
 	public static Locale currentLocale() {
 		switch (language) {
@@ -41,6 +52,14 @@ public class Settings {
 		}
 	}
 
+	public static Collator getCollator() {
+		if (collator == null) {
+			collator = Collator.getInstance(currentLocale());
+			collator.setStrength(Collator.PRIMARY);
+		}
+		return collator;
+	}
+
 	public static void readSettings() {
 		File configFile = new File(CONFIGURATION_FILE_NAME);
 		Properties config = new Properties();
@@ -50,9 +69,9 @@ public class Settings {
 			lastIndexFetchDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(indexUpdatedTimeStamp), ZoneOffset.UTC);
 			String lang = config.getProperty("sortorder", "fi");
 			if (lang.equalsIgnoreCase("fi")) {
-				language = Language.FINNISH;
+				setLanguage(Language.FINNISH);
 			} else if (lang.equalsIgnoreCase("en")) {
-				language = Language.ENGLISH;
+				setLanguage(Language.ENGLISH);
 			}
 			String indexUrl = config.getProperty("indexURL", DEFAULT_JSON_INDEX_URL);
 			// Not a good way to validate URLs but catches at least something.

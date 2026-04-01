@@ -51,7 +51,7 @@ public class TermCategory implements Comparable<TermCategory> {
 
 	@Override
 	public String toString() {
-		switch (Settings.language) {
+		switch (Settings.getLanguage()) {
 		case FINNISH:
 			return nameFi;
 		case ENGLISH:

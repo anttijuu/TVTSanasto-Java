@@ -54,14 +54,6 @@ public class TVTSanasto implements ActionListener, WindowListener {
 	private static final Logger logger = LogManager.getLogger(TVTSanasto.class);
 	private ResourceBundle messages;
 
-	private static final String ABOUT_TEXT = "Tietotekniikan termejä oppijoille 1.1\n" +
-														"Lisätietoja sovelluksesta ja sanastoista: " + 
-														"https://github.com/anttijuu/TVTSanasto-Java" + 
-														"\n\nAvoimen lähdekoodin lisenssit:\n" + 
-														"com.github.rjeschke txtmark Copyright (C) 2011-2015 René Jeschke Apache License Version 2.0\n" + 
-														"org.xerial JDBC SQLite driver Copyright (C) Taro L. Saito Apache License Version 2.0\n" +
-														"Ulkoinen binäärityökalu (lähdekoodia ei käytetä): GraphViz: Common Public License Version 1.0";
-
 	public static void main(String[] args) {
 		logger.info("Launching TVTSanasto");
 		try {
@@ -71,13 +63,13 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			}
 			new TVTSanasto().run();
 		} catch (SQLException e) {
-			logger.error("SQLException in app, exiting");
+			logger.error("SQLException in app, error with the app database, exiting");
 			e.printStackTrace();
 		} catch (IOException e) {
-			logger.error("IOException in app, exiting");
+			logger.error("IOException in app, something went wrong with settings file?, exiting");
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			logger.error("URISyntaxException in app, exiting");
+			logger.error("URISyntaxException in app, cannot fetch data from remote server, exiting");
 			e.printStackTrace();
 		}
 	}
@@ -89,7 +81,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		messages = ResourceBundle.getBundle("TVTSanastoBundle", Settings.currentLocale());
 
 		logger.info("Index last fetched: " + Settings.lastIndexFetchDateTime.toString());
-		logger.info("Selected language/sortorder: " + Settings.language);
+		logger.info("Selected language/sortorder: " + Settings.getLanguage());
 		logger.debug("Creating TermProvider");
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
@@ -115,9 +107,9 @@ public class TVTSanasto implements ActionListener, WindowListener {
 
 		logger.debug("Initializing Menus");
 		JMenuBar mainMenu = new JMenuBar();
-		JMenu appMenu = new JMenu("TVT Sanasto");
+		JMenu appMenu = new JMenu(messages.getString("app_name_full"));
 		// Maze size
-		JMenuItem commandMenu = new JMenuItem("Tietoja");
+		JMenuItem commandMenu = new JMenuItem(messages.getString("app_info_text"));
 		commandMenu.setActionCommand("cmd-about");
 		commandMenu.addActionListener(this);
 		appMenu.add(commandMenu);
@@ -127,12 +119,20 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		Icon flagEn = new ImageIcon(ClassLoader.getSystemResource("images/en.png"));
 
 		ButtonGroup group = new ButtonGroup();
-		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem("Suomi", flagFi, provider.getSortOrder() == Language.FINNISH);
+		JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem(
+			messages.getString("lang_fi"),
+			flagFi,
+			provider.getSortOrder() == Language.FINNISH
+		);
 		radioMenu.setActionCommand("sort-fi");
 		radioMenu.addActionListener(this);
 		group.add(radioMenu);
 		appMenu.add(radioMenu);
-		radioMenu = new JRadioButtonMenuItem("Englanti", flagEn, provider.getSortOrder() == Language.ENGLISH);
+		radioMenu = new JRadioButtonMenuItem(
+			messages.getString("lang_en"),
+			flagEn,
+			provider.getSortOrder() == Language.ENGLISH
+		);
 		radioMenu.addActionListener(this);
 		radioMenu.setActionCommand("sort-en");
 		group.add(radioMenu);
@@ -140,21 +140,21 @@ public class TVTSanasto implements ActionListener, WindowListener {
 
 		appMenu.addSeparator();
 
-		commandMenu = new JMenuItem("Päivitä kategoriat");
+		commandMenu = new JMenuItem(messages.getString("app_command_update_categories"));
 		commandMenu.setActionCommand("cmd-refresh-index");
 		commandMenu.addActionListener(this);
 		appMenu.add(commandMenu);
-		commandMenu = new JMenuItem("Päivitä valittu kategoria");
+		commandMenu = new JMenuItem(messages.getString("app_command_update_selected_category"));
 		commandMenu.setActionCommand("cmd-refresh-category");
 		commandMenu.addActionListener(this);
 		appMenu.add(commandMenu);
 		appMenu.addSeparator();
-		commandMenu = new JMenuItem("Luo termiverkko");
+		commandMenu = new JMenuItem(messages.getString("app_command_create_term_graph"));
 		commandMenu.setActionCommand("cmd-create-graph");
 		commandMenu.addActionListener(this);
 		appMenu.add(commandMenu);
 		appMenu.addSeparator();
-		commandMenu = new JMenuItem("Lopeta");
+		commandMenu = new JMenuItem(messages.getString("app_command_quit"));
 		commandMenu.setActionCommand("cmd-quit");
 		commandMenu.addActionListener(this);
 		appMenu.add(commandMenu);
@@ -163,7 +163,6 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		logger.debug("Showing app");
 		frame.addWindowListener(this);
 		frame.pack();
-		updateUILanguage();
 		frame.setVisible(true);
 	}
 
@@ -200,12 +199,12 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			final String aboutText = messages.getString("about");
 			JOptionPane.showMessageDialog(frame, aboutText, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("sort-fi")) {
-			Settings.language = Language.FINNISH;
+			Settings.setLanguage(Language.FINNISH);
 			Settings.saveSettings();
 			provider.setSortOrder(Language.FINNISH);
 			updateUILanguage();
 		} else if (e.getActionCommand().equals("sort-en")) {
-			Settings.language = Language.ENGLISH;
+			Settings.setLanguage(Language.ENGLISH);
 			Settings.saveSettings();
 			provider.setSortOrder(Language.ENGLISH);
 			updateUILanguage();

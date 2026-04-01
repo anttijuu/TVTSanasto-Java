@@ -3,17 +3,13 @@ package fi.oulu.tol.model;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.text.CollationKey;
+import java.text.Collator;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +28,7 @@ public class TermProvider {
 	private TermCategory selectedCategory;
 	private Term selectedTerm;
 	private Set<TermProviderObserver> observers = new HashSet<>();
-	private Language sortOrder = Settings.language;
+	private Language sortOrder = Settings.getLanguage();
 	private String searchFilter = "";
 
 	private static final int FETCH_TIME_GAP_HOURS = 6; // hrs between network fetches.
@@ -115,10 +111,11 @@ public class TermProvider {
 	}
 
 	private Comparator<? super Term> comparator() {
+		Collator collator = Settings.getCollator();
 		if (sortOrder == Language.FINNISH) {
-			return (p1, p2) -> { return p1.finnish.toLowerCase().compareTo(p2.finnish.toLowerCase()); };
+			return (p1, p2) -> { return collator.compare(p1.finnish, p2.finnish); };
 		}
-		return (p1, p2) -> { return p1.english.toLowerCase().compareTo(p2.english.toLowerCase()); };
+		return (p1, p2) -> { return collator.compare(p1.english, p2.english); };
 	}
 
 	public List<Term> fetchTerms(TermCategory category) throws JSONException, IOException, SQLException, URISyntaxException {

@@ -77,7 +77,7 @@ public class Term {
 
 	@Override
 	public String toString() {
-		if (Settings.language == Language.FINNISH) {
+		if (Settings.getLanguage() == Language.FINNISH) {
 			return finnish + " (" + english + ")";
 		}
 		return english + " (" + finnish + ")";
