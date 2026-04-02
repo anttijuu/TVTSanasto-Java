@@ -45,6 +45,7 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 
 	private transient URLActionListener urlActionListener = new URLActionListener();
 
+	// TODO: Set the localized labels already here, lang updated in event handler if changed later.
 	public TermDetailView(TermProvider provider) {
 		this.provider = provider;
 		provider.addObserver(this);

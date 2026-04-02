@@ -30,6 +30,7 @@ public class TermCategoryListView extends JPanel implements javax.swing.event.Li
 	private JList<TermCategory> list;
 	private transient TermProvider provider;
 
+	// TODO: Set the localized labels already here, lang updated in event handler if changed later.
 	public TermCategoryListView(TermProvider provider) {
 		super(new BorderLayout());
 		this.provider = provider;

@@ -36,11 +36,11 @@ public class Downloader {
 	private static final Logger logger = LogManager.getLogger(Downloader.class);
 
 	public synchronized List<TermCategory> getIndex() throws IOException, URISyntaxException {
-		logger.info("Starting to fetch term indices from " + Settings.mainIndexJSONFileURL);
+		logger.info("Starting to fetch term indices from {}", Settings.mainIndexJSONFileURL);
 		HttpsURLConnection connection = setupConnection(Settings.mainIndexJSONFileURL);
 		List<TermCategory> results = new ArrayList<>();
 		int responseCode = connection.getResponseCode();
-		logger.info("HTTPS response code: " + responseCode);
+		logger.info("HTTPS response code: {}", responseCode);
 		if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
 			return results;
 		} else if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < 300) {
@@ -54,7 +54,7 @@ public class Downloader {
 			logger.debug("Starting to parse received JSON");
 			JSONArray jsonArray = new JSONArray(builder.toString());
 			if (jsonArray.length() > 0) {
-				logger.info("Received " + jsonArray.length() + " items");
+				logger.info("Received {} items", jsonArray.length());
 				for (int index = 0; index < jsonArray.length(); index++) {
 					JSONObject object = jsonArray.getJSONObject(index);
 					TermCategory termCategory = TermCategory.from(object);
@@ -63,7 +63,7 @@ public class Downloader {
 			}
 			in.close();
 		} else {
-			logger.error("Error in response: " + responseCode);
+			logger.error("Error in response: {}", responseCode);
 			throw new IOException("Could not fetch server index");
 		}
 		return results;
@@ -71,10 +71,10 @@ public class Downloader {
 
 	public synchronized List<Term> getTerms(String forCategoryURL) throws IOException, JSONException, URISyntaxException {
 		List<Term> terms = new ArrayList<>();
-		logger.info("Starting to fetch terms from " + forCategoryURL);
+		logger.info("Starting to fetch terms from {}", forCategoryURL);
 		HttpsURLConnection connection = setupConnection(forCategoryURL);
 		int responseCode = connection.getResponseCode();
-		logger.info("HTTPS response code: " + responseCode);
+		logger.info("HTTPS response code: {}", responseCode);
 		if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
 			return terms;
 		} else if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < 300) {
@@ -97,7 +97,7 @@ public class Downloader {
 			}
 			in.close();
 		} else {
-			logger.error("Failed to fetch terms since: " + responseCode);
+			logger.error("Failed to fetch terms since: {}", responseCode);
 			throw new IOException("Could not fetch terms");
 		}
 		return terms;

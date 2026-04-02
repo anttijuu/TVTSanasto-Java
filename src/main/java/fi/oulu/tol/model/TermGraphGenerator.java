@@ -104,10 +104,10 @@ public class TermGraphGenerator {
 				logger.error("Abnormal process termination: " + exitValue);
 			}
 		} catch (IOException e) {
-			logger.error("Could not generate the image: " + e.getMessage());
+			logger.error("Could not generate the image: {}", e.getMessage());
 			throw new GraphGeneratorException("GraphViz dot kuvan generointi ei onnistunut.");
 		} catch (InterruptedException e) {
-			logger.error("Error in process management in image generation: " + e.getMessage());
+			logger.error("Error in process management in image generation: {}", e.getMessage());
 			throw new GraphGeneratorException("GraphViz dot kuvan generointiprosessin lopetus ei onnistunut.");
 		}
 	}
@@ -135,7 +135,7 @@ public class TermGraphGenerator {
 			command = new String [] { "open", "graph.png" };
 		}
 		try {
-			logger.debug("Executing command " + Arrays.toString(command));
+			logger.debug("Executing command {}", Arrays.toString(command));
 			Process process = Runtime.getRuntime().exec(command);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -147,13 +147,13 @@ public class TermGraphGenerator {
 
 			int exitValue = process.waitFor();
 			if (exitValue != 0) {
-				logger.error("Abnormal process termination: " + exitValue);
+				logger.error("Abnormal process termination: {}", exitValue);
 			}
 		} catch (IOException e) {
-			logger.error("Could not open the image: " + e.getMessage());
+			logger.error("Could not open the image: {}", e.getMessage());
 			throw new GraphGeneratorException("Kuvaa ei saatu avattua.");
 		} catch (InterruptedException e) {
-			logger.error("Error in process management in opening image: " + e.getMessage());
+			logger.error("Error in process management in opening image: {}", e.getMessage());
 			throw new GraphGeneratorException("Kuvaa ei saatu avattua.");
 		}
 

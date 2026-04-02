@@ -91,7 +91,7 @@ public class TermProvider {
 		if (terms != null) {
 			terms = database.readTerms(selectedCategory.id, sortOrder);
 			if (terms.isEmpty()) {
-				logger.debug("No terms in db for category, fetching " + selectedCategory.id);
+				logger.debug("No terms in db for category, fetching {}", selectedCategory.id);
 				terms = fetchTerms(selectedCategory);
 			}
 			if (!terms.isEmpty()) {
@@ -197,7 +197,7 @@ public class TermProvider {
 
 	public void setSearchFilter(String filter) {
 		if (!searchFilter.equals(filter)) {
-			logger.debug("Setting the search filter to " + filter);
+			logger.debug("Setting the search filter to {}", filter);
 			searchFilter = filter;
 			notifyObservers(Topic.CATEGORY_TERMS_CHANGED);
 		}

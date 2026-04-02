@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import fi.oulu.tol.Settings;
 
-public class TermCategory implements Comparable<TermCategory> {
+public class TermCategory {
 	String id;
 	String nameEn;
 	String nameFi;
@@ -29,11 +29,6 @@ public class TermCategory implements Comparable<TermCategory> {
 		Date weekAgo = new Date(System.currentTimeMillis() - 3600 * 24 * 7 * 1000);
 		termCategory.updated = weekAgo.toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();
 		return termCategory;
-	}
-
-	@Override
-	public int compareTo(TermCategory o) {
-		return id.compareTo(o.id);
 	}
 
 	@Override

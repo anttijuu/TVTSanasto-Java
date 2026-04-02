@@ -41,7 +41,9 @@ public class LocalDatabase {
 		String database = "jdbc:sqlite:" + dbName;
 		connection = DriverManager.getConnection(database);
 		if (createDatabase) {
+			logger.info("Db being initialized...");
 			initializeDatabase();
+			logger.info("Db initialized");
 		}
 		updateDatabaseSchema();
 	}
@@ -52,7 +54,7 @@ public class LocalDatabase {
 				logger.debug("Closing the db connection");
 				connection.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error("Db close failed: {}", e.getMessage());
 			}
 			connection = null;
 		}
@@ -211,7 +213,7 @@ public class LocalDatabase {
 			createStatement.executeUpdate();
 		}
 		createStatement.close();
-		logger.debug("Updating the category update datatime to db");
+		logger.debug("Updating the category update datetime to db");
 		String updateStatement = "update category set updated = ? where id = ?";
 		PreparedStatement update = connection.prepareStatement(updateStatement);
 		update.setLong(1, category.updated.toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -250,7 +252,7 @@ public class LocalDatabase {
 			try (Statement statement = connection.createStatement()) {
 				try (ResultSet rs = statement.executeQuery("PRAGMA user_version;")) {
 					final int schemaVersion = rs.getInt(1);
-					logger.info("PRAGMA user_version: " + schemaVersion);
+					logger.info("PRAGMA user_version is: " + schemaVersion);
 					if (schemaVersion < CURRENT_SCHEMA_VERSION) {
 						logger.info("db has older schema, updating!");
 						////////////////////////////////
@@ -266,7 +268,7 @@ public class LocalDatabase {
 							try (Statement addAboutColumn = connection.createStatement()) {
 								addAboutColumn.execute(addAboutURLStatement);
 							}
-							logger.info("Update successful");
+							logger.info("Schema update successful");
 						}
 						// ADD next schema update here, after the previous one.
 
@@ -277,7 +279,7 @@ public class LocalDatabase {
 							logger.info("Updating schema version to db...");
 							String pragmaExecute = "PRAGMA user_version = " + CURRENT_SCHEMA_VERSION;
 							updateSchemaStatement.execute(pragmaExecute);
-							logger.info("...updated schema version to db");
+							logger.info("...updated schema version as {} to db", CURRENT_SCHEMA_VERSION);
 					  }
 					} else {
 						logger.info("No database update needed.");

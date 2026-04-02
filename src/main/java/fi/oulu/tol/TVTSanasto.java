@@ -56,32 +56,37 @@ public class TVTSanasto implements ActionListener, WindowListener {
 
 	public static void main(String[] args) {
 		logger.info("Launching TVTSanasto");
-		try {
 			if (args.length > 0 && (args[0].equalsIgnoreCase("-v") || args[0].equalsIgnoreCase("--version"))) {
 				System.out.println("ICT Vocabularies for learners v 1.1");
 				return;
 			}
-			new TVTSanasto().run();
-		} catch (SQLException e) {
-			logger.error("SQLException in app, error with the app database, exiting");
-			e.printStackTrace();
-		} catch (IOException e) {
-			logger.error("IOException in app, something went wrong with settings file?, exiting");
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			logger.error("URISyntaxException in app, cannot fetch data from remote server, exiting");
-			e.printStackTrace();
-		}
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						new TVTSanasto().run();
+					} catch (SQLException e) {
+						logger.error("SQLException in app, error with the app database, exiting");
+						e.printStackTrace();
+					} catch (IOException e) {
+						logger.error("IOException in app, something went wrong with settings file?, exiting");
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						logger.error("URISyntaxException in app, cannot fetch data from remote server, exiting");
+						e.printStackTrace();
+					}
+				}
+			});
 	}
 
 	private void run() throws SQLException, IOException, URISyntaxException {
 		logger.debug("Reading settings");
 		Settings.readSettings();
+		logger.debug("Settings read");
 
 		messages = ResourceBundle.getBundle("TVTSanastoBundle", Settings.currentLocale());
 
-		logger.info("Index last fetched: " + Settings.lastIndexFetchDateTime.toString());
-		logger.info("Selected language/sortorder: " + Settings.getLanguage());
+		logger.info("Index last fetched: {}", Settings.lastIndexFetchDateTime.toString());
+		logger.info("Selected language/sortorder: {}", Settings.getLanguage());
 		logger.debug("Creating TermProvider");
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
@@ -215,20 +220,20 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				JOptionPane.showMessageDialog(frame, infoString, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 			} catch (UnknownHostException e1) {
 				String message = String.format("Palvelinta ei löydy: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			} catch (SQLException e1) {
 				String message = String.format("Tietokantavirhe: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			} catch (IOException e1) {
 				String message = String.format("Virhe luettaessa kategorioita: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			} catch (URISyntaxException e1) {
 				String message = String.format("Virhe sanaston osoitteessa: %s%n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-refresh-category")) {
 			try {
@@ -238,16 +243,16 @@ public class TVTSanasto implements ActionListener, WindowListener {
 				JOptionPane.showMessageDialog(frame, infoString, messages.getString("app_name_full"), JOptionPane.INFORMATION_MESSAGE);
 			} catch (SQLException | IOException e1) {
 				String message = String.format("Virhe haettaessa termejä: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			} catch (JSONException e1) {
 				String message = String.format("Virhe sanastossa: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			} catch (URISyntaxException e1) {
 				String message = String.format("Virhe sanaston osoitteessa: %s\n", e1.getLocalizedMessage());
+				logger.error(message);
 				JOptionPane.showMessageDialog(frame, message, "TVT Sanasto", JOptionPane.ERROR_MESSAGE);
-				e1.printStackTrace();
 			}
 		} else if (e.getActionCommand().equals("cmd-create-graph")) {
 			String error = null;
@@ -255,18 +260,18 @@ public class TVTSanasto implements ActionListener, WindowListener {
 			try {
 				new TermGraphGenerator(provider).buildGraph();
 			} catch (SQLException | IOException e1) {
-				e1.printStackTrace();
 				error = e1.getMessage();
+				logger.error("Database or IO error: {}", error);
 			} catch (GraphGeneratorException e1) {
-				e1.printStackTrace();
 				error = e1.getMessage();
+				logger.error("Graph generator error: {}", error);
 				graphVizError = "Onko GraphViz asennettu ja käytettävissä komentoriviltä?";
 			} catch (JSONException e1) {
-				e1.printStackTrace();
 				error = e1.getMessage();
+				logger.error("JSON error: {}", error);
 			} catch (URISyntaxException e1) {
-				e1.printStackTrace();
 				error = e1.getMessage();
+				logger.error("URI error: {}", error);
 			}
 			if (null != error) {
 				String message = String.format("Termiverkkoa ei saatu luotua.\n%s\nVirhe: %s", graphVizError, error);
