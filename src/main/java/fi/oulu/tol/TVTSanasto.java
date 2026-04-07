@@ -90,7 +90,7 @@ public class TVTSanasto implements ActionListener, WindowListener {
 		logger.debug("Creating TermProvider");
 		provider = new TermProvider();
 		logger.debug("Initializing Swing GUI");
-		frame = new JFrame("TVT Sanasto");
+		frame = new JFrame(messages.getString("app_name_full"));
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
 
