@@ -1,12 +1,13 @@
 package fi.oulu.tol.view;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.awt.Desktop;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,7 +21,10 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.jar.Attributes;
 
 import com.github.rjeschke.txtmark.Processor;
 
@@ -83,10 +87,34 @@ public class TermDetailView extends JPanel implements TermProviderObserver {
 		labelURLEnglish = new JButton();
 		labelURLEnglish.setAlignmentX(LEFT_ALIGNMENT);
 		labelURLEnglish.addActionListener(urlActionListener);
+		labelURLEnglish.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+		labelURLEnglish.setForeground(Color.BLUE);
+
+		MouseAdapter mouseAdapter = new MouseAdapter() {
+			public void mouseEntered(java.awt.event.MouseEvent evt) {
+				Component component = evt.getComponent();
+				Map<TextAttribute, Integer> fontAttributes = new HashMap<TextAttribute, Integer>();
+				fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+				Font buttonFont = component.getFont().deriveFont(fontAttributes);
+				component.setFont(buttonFont);
+			}
+			public void mouseExited(java.awt.event.MouseEvent evt) {
+				Component component = evt.getComponent();
+				Map<TextAttribute, Integer> fontAttributes = new HashMap<TextAttribute, Integer>();
+				fontAttributes.put(TextAttribute.UNDERLINE, -1);
+				Font buttonFont = labelURLEnglish.getFont().deriveFont(fontAttributes);
+				component.setFont(buttonFont);
+			}
+		};
+		labelURLEnglish.addMouseListener(mouseAdapter);
+
 		add(labelURLEnglish);
 		labelURLFinnish = new JButton();
 		labelURLFinnish.setAlignmentX(LEFT_ALIGNMENT);
 		labelURLFinnish.addActionListener(urlActionListener);
+		labelURLFinnish.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		labelURLFinnish.setForeground(Color.BLUE);
+		labelURLFinnish.addMouseListener(mouseAdapter);
 		add(labelURLFinnish);
 		updateContents();
 	}
